@@ -14,3 +14,4 @@
 ## 当前结构
 
 - `heterogeneous-agents.md`：记录 sidecar 对异构 coding agent 的支持。
+- `codex/`：记录 sidecar 在 Codex 中的实现。

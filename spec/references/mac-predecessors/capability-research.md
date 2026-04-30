@@ -49,7 +49,13 @@
 - 权限审批、问题回答、plan review、进度查看，是 agent 协作从“看见”走向“参与”的关键能力。
 - 多 agent 支持说明用户可能同时运行多个 coding agent。
 - terminal jump 说明 agent 协作系统需要把用户带回具体上下文。
-- token、成本、quota 追踪说明长期运行 agent 时，资源感知也是工作流的一部分。
+- token、成本、quota 感知是锦上添花的能力。
+- 在电脑端有足够的屏幕信息可供查看 token、成本、quota。
+- 移动端并不适合让用户一直盯着手机看余额。
+
+## 能力优先级判断
+
+- `Token / cost / usage tracking` 是锦上添花的能力，不是移动端第一目标。
 
 ## 对 Nera 的启发
 

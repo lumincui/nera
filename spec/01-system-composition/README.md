@@ -4,6 +4,7 @@
 
 - 嵌入到 coding agent 的 sidecar。
 - 用户随处可用的移动端。
+- relay。
 
 ## Sidecar
 
@@ -13,7 +14,10 @@
 
 - 移动端是用户随处可用的端。
 
+## Relay
+
+- Relay 负责通过 APNs 等机制，实现 human agent 交互。
+
 ## Nera
 
-- Nera 将 sidecar 和移动端紧密连接。
-- Nera 拉近 sidecar 和移动端的距离。
+- Nera 将 sidecar、relay 和移动端紧密连接。

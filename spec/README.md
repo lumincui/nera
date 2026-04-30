@@ -8,4 +8,5 @@
 - `01-system-composition/`：记录系统组成。
 - `02-platform-scope.md`：记录平台范围。
 - `references/`：记录设计过程中需要参考的外部知识。
+- `relay/`：记录 relay 设计。
 - `sidecar/`：记录 sidecar 架构设计。

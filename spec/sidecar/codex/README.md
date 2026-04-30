@@ -19,3 +19,7 @@
 - `PermissionRequest` 会在 Codex 即将请求 approval 时运行。
 - `PreToolUse` 可以在工具调用执行前介入。
 - `PostToolUse` 可以在工具调用执行后介入。
+
+## 当前结构
+
+- `agent-to-human/`：记录 sidecar 需要处理的 agent -> human 交互。

@@ -3,6 +3,7 @@
 ## 定位
 
 - sidecar 要处理 agent -> human 的交互。
+- `agent <-- nera --> human` 说明了 Nera 的目标和价值。
 
 ## 交互类型
 

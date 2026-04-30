@@ -9,6 +9,7 @@
 - 手机端可以随时下达指令。
 - 手机端可以 review 工作进度和内容。
 - Nera 将嵌入到 coding agent 的 sidecar 和用户随处可用的移动端紧密连接，拉近两个端的距离。
+- `agent <-- nera --> human` 很好地说明了 Nera 的目标和价值。
 
 ## 原则
 

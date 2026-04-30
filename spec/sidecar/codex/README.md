@@ -23,3 +23,4 @@
 ## 当前结构
 
 - `agent-to-human/`：记录 sidecar 需要处理的 agent -> human 交互。
+- `human-to-agent/`：记录 sidecar 需要处理的 human -> agent 交互。

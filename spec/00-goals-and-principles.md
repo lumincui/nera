@@ -11,6 +11,8 @@
 - Nera 将嵌入到 coding agent 的 sidecar 和用户随处可用的移动端紧密连接，拉近两个端的距离。
 - `agent <-- nera --> human` 很好地说明了 Nera 的目标和价值。
 - Nera 要让 agent 的协作随处可行。
+- 现在用户在电脑前和 agent 做规划设计；未来希望可以通过 Nera 随时随地和 agent 一起创作。
+- 这是用户的感受，也是用户对 Nera 未来的期待。
 
 ## 原则
 

@@ -8,10 +8,12 @@
 - 将 coding agent 的反馈实时同步到手机端，例如权限 approve 等。
 - 手机端可以随时下达指令。
 - 手机端可以 review 工作进度和内容。
+- Nera 将嵌入到 coding agent 的 sidecar 和用户随处可用的移动端紧密连接，拉近两个端的距离。
 
 ## 原则
 
-- 暂无。
+- 仅考虑 Apple 生态。
+- 考虑 Apple 生态中的 APNs 等机制。
 
 ## 待澄清问题
 

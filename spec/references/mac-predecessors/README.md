@@ -3,6 +3,11 @@
 ## Reference
 
 - Vibe Island alternatives：https://vibeisland.app/alternatives/
+- Vibe Island：https://vibeisland.app/
+- Vibe Notch：https://vibenotch.app/
+- Notchi：https://notchi.app/
+- AgentNotch：https://www.productcool.com/product/agentnotch
+- xIsland：https://xisland.app/
 
 ## 记录
 
@@ -21,3 +26,7 @@
 - Zero config。
 - Auto-update。
 - Native Swift。
+
+## 当前结构
+
+- `capability-research.md`：记录 Mac 同类产品能力调研。

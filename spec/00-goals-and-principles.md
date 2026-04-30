@@ -10,11 +10,13 @@
 - 手机端可以 review 工作进度和内容。
 - Nera 将嵌入到 coding agent 的 sidecar 和用户随处可用的移动端紧密连接，拉近两个端的距离。
 - `agent <-- nera --> human` 很好地说明了 Nera 的目标和价值。
+- Nera 要让 agent 的协作随处可行。
 
 ## 原则
 
 - 仅考虑 Apple 生态。
 - 考虑 Apple 生态中的 APNs 等机制。
+- 已经有一批先行者完成 Mac 上完整功能的验证，他们的能力值得参考。
 
 ## 待澄清问题
 

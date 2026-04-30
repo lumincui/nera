@@ -1,0 +1,24 @@
+.DS_Store
+
+# Logs
+*.log
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Dependencies and build outputs
+node_modules/
+dist/
+build/
+.next/
+coverage/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Editor files
+.idea/
+.vscode/

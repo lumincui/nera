@@ -11,3 +11,4 @@
 - `relay/`：记录 relay 设计。
 - `sidecar/`：记录 sidecar 架构设计。
 - `touchpoint/`：记录 touchpoint 设计。
+- `touchpoint-standby.md`：记录 touchpoint 利用 iPhone 横向充电 StandBy 状态的思维火花。

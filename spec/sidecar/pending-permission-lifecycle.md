@@ -50,7 +50,6 @@ pending permission 可以通过以下方式结束：
 
 ## 待澄清问题
 
-- pending permission 默认超时时间是多少。
 - hook process 能等待多久。
 - expired 后默认 deny 还是 fail open / fail closed。
 - touchpoint 卡片过期状态如何展示。

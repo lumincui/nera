@@ -56,6 +56,7 @@ agent 完成任务 / turn
 - touchpoint 通过 APNs 接收主动推送，不需要像 sidecar 一样维护长连接。
 - touchpoint 卡片交互已经画过原型图。
 - 第一版 pending permission 不持久化；sidecar daemon 重启时所有 pending permission 失效。
+- pending permission 的超时时间跟随 agent hook 的最大允许时间。
 
 ## 还没设计清楚的部分
 

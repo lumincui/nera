@@ -30,7 +30,7 @@ pending permission 可以通过以下方式结束：
 - `denied`：用户拒绝，sidecar daemon 返回 deny 给 hook。
 - `expired`：用户超时未处理，或者 hook 等待超时。Nera 不自动 approve，也不自动 deny，由 agent 原生行为处理 hook timeout / fallback。
 - `lost`：sidecar daemon 重启或 pending hook connection 丢失。
-- `not_found`：server 下发 approval response 时，本地已经没有对应 pending permission。
+- `not_found`：server 下发 approval response 时，本地已经没有对应 pending permission；sidecar 静默丢弃该 approval response。
 
 ## 第一版行为
 
@@ -38,9 +38,10 @@ pending permission 可以通过以下方式结束：
 - 每个 pending permission 需要记录对应 hook connection / response handle。
 - approval response 必须携带 `request_id`。
 - 收到 approval response 后，如果找到 pending permission，则返回 hook response 并移除 pending。
-- 如果找不到 pending permission，则返回 delivery failed / stale approval 给 server。
+- 如果找不到 pending permission，则静默丢弃 approval response。
 - sidecar daemon 重启后，不尝试恢复 pending permission。
-- sidecar daemon 重启后，如果 server 仍下发旧 approval response，sidecar 应返回 stale / not_found。
+- sidecar daemon 重启后，如果 server 仍下发旧 approval response，sidecar 静默丢弃。
+- 原因是会话或 pending permission 不存在时，授权已经没有意义。
 
 ## 对 touchpoint 的影响
 

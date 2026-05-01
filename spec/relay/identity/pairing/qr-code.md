@@ -11,9 +11,9 @@
 QR Code 应包含：
 
 - relay endpoint。
+- pairing id。
 - pairing nonce。
 - pairing code。
-- sidecar device id。
 - expires at。
 
 QR Code 不应包含：
@@ -42,4 +42,3 @@ QR Code 不应包含：
 - pairing nonce 的生成方式。
 - QR Code 的 URL scheme。
 - QR Code 是否需要包含 relay endpoint。
-- sidecar device id 是否需要脱敏。

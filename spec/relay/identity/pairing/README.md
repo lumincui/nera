@@ -20,9 +20,11 @@
 3. touchpoint 扫码或输入配对码。
 4. touchpoint 向 relay 提交配对请求。
 5. relay 校验配对码是否有效。
-6. 配对成功后，sidecar 和 touchpoint 各自生成设备密钥。
-7. relay 记录 pairing 和设备的关系。
-8. 后续通信靠设备密钥签名或 token 证明身份。
+6. relay 将 touchpoint 的 claim 通知给 sidecar。
+7. sidecar 二次确认配对。
+8. 配对成功后，sidecar 和 touchpoint 各自生成设备密钥。
+9. relay 记录 pairing 和设备的关系。
+10. 后续通信靠设备密钥签名或 token 证明身份。
 
 ## 配对码要求
 
@@ -56,11 +58,13 @@
 
 ## 待设计
 
-- 设备密钥生成与保存方式。
 - token 签发与轮换方式。
 - 设备解绑方式。
 
 ## 当前结构
 
+- `device-keys.md`：记录设备密钥机制。
+- `endpoint-responsibilities.md`：记录 sidecar、touchpoint、relay 三端职责。
 - `qr-code.md`：记录配对码和 QR Code 内容。
 - `state-machine.md`：记录 pairing 状态机。
+- `three-party-flow.md`：记录三端配对流程。

@@ -1,8 +1,9 @@
-# Mobile
+# Touchpoint
 
 ## 定位
 
-- Mobile 是 Nera 和用户的交互界面。
+- Touchpoint 是 Nera 和用户的交互界面。
+- Touchpoint 当前面向移动端。
 
 ## 候选方案
 

@@ -56,10 +56,11 @@
 
 ## 待设计
 
-- 配对码格式。
-- QR Code 内容。
-- pairing id 生成方式。
-- device id 生成方式。
 - 设备密钥生成与保存方式。
 - token 签发与轮换方式。
 - 设备解绑方式。
+
+## 当前结构
+
+- `qr-code.md`：记录配对码和 QR Code 内容。
+- `state-machine.md`：记录 pairing 状态机。

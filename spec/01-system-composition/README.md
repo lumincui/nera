@@ -10,9 +10,10 @@
 
 - sidecar 用来传递和 coding agent 的交互和指令。
 
-## 移动端
+## Mobile
 
-- 移动端是用户随处可用的端。
+- Mobile 是用户随处可用的端。
+- Mobile 是 Nera 和用户的交互界面。
 
 ## Relay
 

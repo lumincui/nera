@@ -18,6 +18,29 @@ const events = {
     primary: "确认",
     secondary: "稍后",
     result: "回答会通过 relay 回传给 sidecar",
+    text: false,
+  },
+  questionChoice: {
+    kind: "Question",
+    title: "Codex 需要你澄清",
+    body: "这个通知原型是否只聚焦 approve 和 question？",
+    agent: "Codex",
+    task: "交互设计",
+    primary: "确认",
+    secondary: "稍后",
+    result: "回答会通过 relay 回传给 sidecar",
+    text: false,
+  },
+  questionText: {
+    kind: "Question",
+    title: "Codex 需要开放回答",
+    body: "你希望我接下来优先验证哪种通知交互？",
+    agent: "Codex",
+    task: "交互设计",
+    primary: "发送",
+    secondary: "稍后",
+    result: "文本或听写内容会通过 relay 回传给 sidecar",
+    text: true,
   },
   idle: {
     kind: "完成提醒",
@@ -28,6 +51,7 @@ const events = {
     primary: "Review",
     secondary: "稍后",
     result: "Review 会打开对应任务上下文",
+    text: false,
   },
 };
 
@@ -41,6 +65,8 @@ const primaryAction = document.querySelector("#primaryAction");
 const secondaryAction = document.querySelector("#secondaryAction");
 const resultBanner = document.querySelector("#resultBanner");
 const resultText = document.querySelector("#resultText");
+const textReply = document.querySelector("#textReply");
+const replyInput = document.querySelector("#replyInput");
 
 function setEvent(name) {
   const item = events[name];
@@ -51,6 +77,8 @@ function setEvent(name) {
   contextTask.textContent = item.task;
   primaryAction.textContent = item.primary;
   secondaryAction.textContent = item.secondary;
+  textReply.hidden = !item.text;
+  primaryAction.hidden = item.text;
   resultText.textContent = item.result;
   resultBanner.classList.remove("visible");
   notification.classList.remove("handled");
@@ -68,5 +96,11 @@ document.querySelectorAll(".dock button").forEach((button) => {
 
 primaryAction.addEventListener("click", () => handleAction(primaryAction.textContent));
 secondaryAction.addEventListener("click", () => handleAction(secondaryAction.textContent));
+textReply.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const value = replyInput.value.trim();
+  handleAction(value ? `已回复：${value}` : "已发送文本回复");
+  replyInput.value = "";
+});
 
 setEvent("permission");

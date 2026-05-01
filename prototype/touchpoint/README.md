@@ -14,5 +14,7 @@
 ## 覆盖场景
 
 - `tool permission request`
-- `question`
+- `question` 单项选择
+- `question` 文本输入
+- `question` 通过系统听写输入文本
 - `idle`

@@ -40,6 +40,10 @@
                 <button class="secondary" id="secondaryAction">拒绝</button>
                 <button class="primary" id="primaryAction">Approve</button>
               </div>
+              <form class="textReply" id="textReply" hidden>
+                <input id="replyInput" type="text" placeholder="输入或使用系统听写回答" />
+                <button class="primary" type="submit">发送</button>
+              </form>
             </article>
 
             <article class="notification compact">
@@ -60,7 +64,8 @@
 
           <nav class="dock" aria-label="prototype controls">
             <button data-event="permission">权限请求</button>
-            <button data-event="question">Question</button>
+            <button data-event="questionChoice">选择题</button>
+            <button data-event="questionText">文本/语音</button>
             <button data-event="idle">完成提醒</button>
           </nav>
         </div>
@@ -72,7 +77,8 @@
         <p>这个原型只验证 Nera touchpoint 的可操作通知场景。</p>
         <ul>
           <li>授权类请求：直接 approve 或拒绝。</li>
-          <li>question 请求：直接选择或进入回答。</li>
+          <li>question 请求：单项选择，或输入文本。</li>
+          <li>语音输入：通过系统听写进入文本回复。</li>
           <li>完成提醒：进入 review，而不是停留在通知里完成复杂 review。</li>
         </ul>
       </aside>

@@ -229,13 +229,34 @@ button {
   transform: translateY(0);
 }
 
+.textReply {
+  display: grid;
+  grid-template-columns: 1fr 72px;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.textReply[hidden] {
+  display: none;
+}
+
+.textReply input {
+  min-width: 0;
+  height: 42px;
+  padding: 0 13px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--panel-strong);
+  font: inherit;
+}
+
 .dock {
   position: absolute;
   left: 18px;
   right: 18px;
   bottom: 18px;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 8px;
   padding: 10px;
   border-radius: 28px;
@@ -247,7 +268,7 @@ button {
   min-height: 42px;
   color: var(--ink);
   background: rgba(118, 118, 128, 0.14);
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .notes {

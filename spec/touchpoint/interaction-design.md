@@ -29,6 +29,14 @@
 | agent 正在工作 | Live Activities / Dynamic Island | 查看状态。 |
 | agent 需要复杂 review | App 内实时会话 | review 工作进度和内容。 |
 
+## Question 形态
+
+| 形态 | 可操作通知支持情况 | 说明 |
+| --- | --- | --- |
+| 单项选择 | 支持 | 使用通知 action button 表达有限选项。 |
+| 直接输入文本 | 支持 | 使用 `UNTextInputNotificationAction`。 |
+| 语音输入 | 间接支持 | 文本输入动作显示输入控件，系统允许用户输入或听写文本。 |
+
 ## Human -> Agent
 
 | 用户意图 | 推荐入口 | 动作 |

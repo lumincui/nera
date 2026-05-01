@@ -6,6 +6,9 @@
 - Nera 不独立拍脑袋定义统一超时时间。
 - 不同 agent adapter 可以根据对应 agent 的 hook 能力设置超时时间。
 - 如果某个 agent hook 的最大等待时间未知，该 adapter 需要先明确能力边界，再进入实现。
+- pending permission 超时后，Nera 不自动 approve，也不自动 deny。
+- 超时后由 agent 原生行为处理 hook timeout / fallback。
+- Nera 只负责把 pending permission 标记为 expired。
 
 ## 原因
 

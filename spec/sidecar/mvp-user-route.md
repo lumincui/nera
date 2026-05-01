@@ -57,6 +57,7 @@ agent 完成任务 / turn
 - touchpoint 卡片交互已经画过原型图。
 - 第一版 pending permission 不持久化；sidecar daemon 重启时所有 pending permission 失效。
 - pending permission 的超时时间跟随 agent hook 的最大允许时间。
+- pending permission 超时后，Nera 不自动 approve，也不自动 deny；由 agent 原生行为处理 hook timeout / fallback。
 
 ## 还没设计清楚的部分
 

@@ -28,7 +28,7 @@ pending permission 可以通过以下方式结束：
 
 - `approved`：用户批准，sidecar daemon 返回 allow 给 hook。
 - `denied`：用户拒绝，sidecar daemon 返回 deny 给 hook。
-- `expired`：用户超时未处理，或者 hook 等待超时。
+- `expired`：用户超时未处理，或者 hook 等待超时。Nera 不自动 approve，也不自动 deny，由 agent 原生行为处理 hook timeout / fallback。
 - `lost`：sidecar daemon 重启或 pending hook connection 丢失。
 - `not_found`：server 下发 approval response 时，本地已经没有对应 pending permission。
 
@@ -51,5 +51,4 @@ pending permission 可以通过以下方式结束：
 ## 待澄清问题
 
 - hook process 能等待多久。
-- expired 后默认 deny 还是 fail open / fail closed。
 - touchpoint 卡片过期状态如何展示。

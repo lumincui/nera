@@ -33,7 +33,7 @@
 
 ## 当前结构
 
-- `identity.md`：记录 relay 身份设计。
+- `identity/`：记录 relay 身份设计。
 - `public-relay-service.md`：记录是否需要公网中转服务的设计决策。
 
 ## 命名

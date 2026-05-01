@@ -22,5 +22,6 @@
 
 ## 当前结构
 
+- `hook-capability-research.md`：记录 Codex hooks 对 Nera MVP 的能力边界与推荐接入方案。
 - `agent-to-human/`：记录 sidecar 需要处理的 agent -> human 交互。
 - `human-to-agent/`：记录 sidecar 需要处理的 human -> agent 交互。

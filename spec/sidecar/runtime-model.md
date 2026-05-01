@@ -15,6 +15,7 @@
 
 ## Touchpoint 长连接机制
 
+- Nera server 到 touchpoint 的主动触达通过 APNs 完成。
 - touchpoint 通过 APNs 接收服务器主动推送。
 - 因为 touchpoint 可以借助 APNs 接收主动推送，所以不需要刻意维护长连接。
 

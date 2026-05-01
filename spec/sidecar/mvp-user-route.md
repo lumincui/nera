@@ -25,7 +25,7 @@ agent 触发 permission request
   -> hook CLI 收到事件
   -> sidecar daemon 记录 pending permission
   -> sidecar daemon 上报 Nera server
-  -> Nera server 推送 touchpoint
+  -> Nera server 通过 APNs 推送 touchpoint
   -> 用户在 touchpoint approve / deny
   -> Nera server 将审批结果投递给 sidecar daemon
   -> sidecar daemon 找到 pending permission
@@ -39,7 +39,7 @@ agent 触发 permission request
 agent 完成任务 / turn
   -> hook CLI 收到完成事件
   -> sidecar daemon 上报 Nera server
-  -> Nera server 推送 touchpoint
+  -> Nera server 通过 APNs 推送 touchpoint
   -> 用户在 touchpoint 查看结果
 ```
 
@@ -51,6 +51,7 @@ agent 完成任务 / turn
 - `session_id` 复用 coding agent 原生 session id。
 - sidecar 本地维护 session registry。
 - 服务器消息不直接注入 agent，由 sidecar daemon 在本机完成注入。
+- Nera server 到 touchpoint 的主动触达通过 APNs 完成。
 - approve / deny 优先通过 pending hook response 注入。
 - 普通 human input 第一版可以通过 terminal stdin injection 注入，但不是本路线的第一主路径。
 - touchpoint 通过 APNs 接收主动推送，不需要像 sidecar 一样维护长连接。
@@ -174,10 +175,10 @@ agent 完成任务 / turn
 
 第一版如果优先 Codex，需要明确：
 
-- Codex 哪个 hook 对应 permission request。
-- Codex hook 是否支持阻塞等待 approve / deny。
-- Codex hook response stdout schema 是什么。
-- Codex completion 事件来自哪个 hook。
+- Codex 哪个 hook 对应 permission request：`PermissionRequest`。
+- Codex hook 支持通过 command hook 阻塞等待 approve / deny，并通过 stdout JSON 返回 allow / deny；超时由 hook `timeout` 控制，默认 `600s`，第一版应显式配置。
+- Codex hook response stdout schema 见 `codex/hook-capability-research.md`。
+- Codex completion 事件第一版来自 `Stop` hook。
 
 ## 下一个优先设计点
 
@@ -185,7 +186,7 @@ agent 完成任务 / turn
 
 1. Permission request event schema。
 2. Approval response message schema。
-3. Pending permission 生命周期。
+3. Sidecar polling / ack 最小协议。
 4. Completion event schema。
 
-其中最关键的是 pending permission 生命周期，因为它决定用户审批是否能可靠返回 agent。
+其中 Codex hook 能力边界已经完成初步调研；接下来最关键的是把 permission request / approval response schema 和 sidecar polling / ack 最小协议定下来。

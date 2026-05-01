@@ -16,6 +16,7 @@
 - `runtime-model.md`：记录 sidecar 的运行形态。
 - `message-injection.md`：记录服务器消息如何经由 sidecar 注入 agent 会话。
 - `mvp-user-route.md`：记录最简单 user 路线及尚未设计清楚的部分。
+- `permission-request-event.md`：记录 sidecar 上报给 Nera server 的权限请求事件模型。
 - `pending-permission-lifecycle.md`：记录 pending permission 的生命周期。
 - `timeout-policy.md`：记录 sidecar 的超时策略。
 - `vibeisland-reverse-addressing.md`：记录 VibeIsland / Open Island 从消息反向寻址 agent 的参考实现。

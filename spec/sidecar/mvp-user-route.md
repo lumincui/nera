@@ -65,22 +65,7 @@ agent 完成任务 / turn
 
 ### 1. Permission request 的标准事件模型
 
-需要定义 sidecar 上报给 Nera server 的权限请求字段，例如：
-
-- `event_id`
-- `sidecar_id`
-- `agent_type`
-- `session_id`
-- `request_id`
-- `tool_name`
-- `tool_use_id`
-- `title`
-- `summary`
-- `risk_preview`
-- `cwd`
-- `command` / `affected_path`
-- `created_at`
-- `expires_at`
+已确认第一版采用统一的 `target` 结构描述被审批对象，不在顶层展开 `command` / `affected_path` 等 agent-specific 字段。详细记录见 `permission-request-event.md`。
 
 ### 2. Approval response 的标准消息模型
 

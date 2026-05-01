@@ -228,6 +228,30 @@ button {
   display: none;
 }
 
+.multiChoice {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.multiChoice[hidden] {
+  display: none;
+}
+
+.choice {
+  min-height: 34px;
+  padding: 0 12px;
+  color: #303740;
+  background: rgba(118, 118, 128, 0.14);
+  font-size: 13px;
+}
+
+.choice.selected {
+  color: #fff;
+  background: var(--blue);
+}
+
 button {
   min-height: 42px;
   border: 0;
@@ -297,7 +321,7 @@ button {
   right: 18px;
   bottom: 18px;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 8px;
   padding: 10px;
   border-radius: 28px;

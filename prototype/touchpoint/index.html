@@ -51,6 +51,7 @@
                 <button class="secondary" id="secondaryAction">稍后</button>
                 <button class="primary" id="primaryAction">确认</button>
               </div>
+              <div class="multiChoice" id="multiChoice" hidden></div>
               <form class="textReply" id="textReply" hidden>
                 <input id="replyInput" type="text" placeholder="输入或使用系统听写回答" />
                 <button class="primary" type="submit">发送</button>
@@ -75,8 +76,7 @@
 
           <nav class="dock" aria-label="prototype controls">
             <button data-event="permission">权限请求</button>
-            <button data-event="questionChoice">选择题</button>
-            <button data-event="questionText">文本/语音</button>
+            <button data-event="questionMixed">Question</button>
             <button data-event="idle">完成提醒</button>
           </nav>
         </div>
@@ -89,7 +89,7 @@
         <ul>
           <li>权限请求：说明任务、权限、命令。</li>
           <li>权限请求：支持动态操作，例如 Deny / Approve / Always。</li>
-          <li>question 请求：单项选择，或输入文本。</li>
+          <li>question 请求：可以多选，也可以同时输入文本。</li>
           <li>语音输入：通过系统听写进入文本回复。</li>
           <li>完成提醒：进入 review，而不是停留在通知里完成复杂 review。</li>
         </ul>

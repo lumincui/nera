@@ -14,34 +14,23 @@ const events = {
   question: {
     kind: "Question",
     title: "Codex 需要你澄清",
-    body: "这个通知原型是否只聚焦 approve 和 question？",
+    body: "接下来 touchpoint 应该优先验证哪些通知交互？",
     agent: "Codex",
     task: "交互设计",
-    actions: ["稍后", "确认"],
-    result: "回答会通过 relay 回传给 sidecar",
-    mode: "question",
-    text: false,
+    choices: ["权限请求", "Question", "完成提醒"],
+    result: "选择和输入内容会通过 relay 回传给 sidecar",
+    mode: "mixed-question",
+    text: true,
   },
-  questionChoice: {
+  questionMixed: {
     kind: "Question",
     title: "Codex 需要你澄清",
-    body: "这个通知原型是否只聚焦 approve 和 question？",
+    body: "接下来 touchpoint 应该优先验证哪些通知交互？",
     agent: "Codex",
     task: "交互设计",
-    actions: ["稍后", "确认"],
-    result: "回答会通过 relay 回传给 sidecar",
-    mode: "question",
-    text: false,
-  },
-  questionText: {
-    kind: "Question",
-    title: "Codex 需要开放回答",
-    body: "你希望我接下来优先验证哪种通知交互？",
-    agent: "Codex",
-    task: "交互设计",
-    actions: ["稍后"],
-    result: "文本或听写内容会通过 relay 回传给 sidecar",
-    mode: "question",
+    choices: ["权限请求", "Question", "完成提醒"],
+    result: "选择和输入内容会通过 relay 回传给 sidecar",
+    mode: "mixed-question",
     text: true,
   },
   idle: {
@@ -67,6 +56,7 @@ const detailPermission = document.querySelector("#detailPermission");
 const detailCommand = document.querySelector("#detailCommand");
 const actionRow = document.querySelector("#actionRow");
 const questionActions = document.querySelector("#questionActions");
+const multiChoice = document.querySelector("#multiChoice");
 const primaryAction = document.querySelector("#primaryAction");
 const secondaryAction = document.querySelector("#secondaryAction");
 const resultBanner = document.querySelector("#resultBanner");
@@ -84,7 +74,9 @@ function setEvent(name) {
   detailCommand.textContent = item.command || "不适用";
   permissionDetails.hidden = item.mode !== "permission";
   actionRow.hidden = item.mode !== "permission";
-  questionActions.hidden = item.mode === "permission" || item.text;
+  questionActions.hidden = item.mode === "permission" || item.text || item.mode === "mixed-question";
+  multiChoice.hidden = item.mode !== "mixed-question";
+  renderChoices(item.choices || []);
   renderActions(item.actions || []);
   if (item.mode !== "permission" && !item.text) {
     secondaryAction.textContent = item.actions[0];
@@ -95,6 +87,18 @@ function setEvent(name) {
   resultText.textContent = item.result;
   resultBanner.classList.remove("visible");
   notification.classList.remove("handled");
+}
+
+function renderChoices(choices) {
+  multiChoice.innerHTML = "";
+  choices.forEach((label) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = label;
+    button.className = "choice";
+    button.addEventListener("click", () => button.classList.toggle("selected"));
+    multiChoice.appendChild(button);
+  });
 }
 
 function renderActions(actions) {
@@ -124,7 +128,11 @@ secondaryAction.addEventListener("click", () => handleAction(secondaryAction.tex
 textReply.addEventListener("submit", (event) => {
   event.preventDefault();
   const value = replyInput.value.trim();
-  handleAction(value ? `已回复：${value}` : "已发送文本回复");
+  const selected = [...multiChoice.querySelectorAll(".selected")].map((button) => button.textContent);
+  const parts = [];
+  if (selected.length) parts.push(`选择：${selected.join("、")}`);
+  if (value) parts.push(`补充：${value}`);
+  handleAction(parts.length ? parts.join("；") : "已发送回复");
   replyInput.value = "";
 });
 

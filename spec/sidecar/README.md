@@ -14,6 +14,7 @@
 ## 当前结构
 
 - `runtime-model.md`：记录 sidecar 的运行形态。
+- `message-injection.md`：记录服务器消息如何经由 sidecar 注入 agent 会话。
 - `vibeisland-reverse-addressing.md`：记录 VibeIsland / Open Island 从消息反向寻址 agent 的参考实现。
 - `heterogeneous-agents.md`：记录 sidecar 对异构 coding agent 的支持。
 - `codex/`：记录 sidecar 在 Codex 中的实现。

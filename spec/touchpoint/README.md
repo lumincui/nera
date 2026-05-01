@@ -14,3 +14,4 @@
 ## 当前结构
 
 - `ios-interaction-forms.md`：记录 iOS 上可用于实时性和交互能力的形式。
+- `interaction-design.md`：记录 touchpoint 交互设计。

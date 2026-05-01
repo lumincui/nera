@@ -18,4 +18,4 @@
 
 ## 原型
 
-- `prototype/touchpoint/`：touchpoint 静态交互原型。
+- `prototype/touchpoint/`：touchpoint 可操作通知静态交互原型。

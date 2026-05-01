@@ -3,84 +3,77 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Nera Touchpoint Prototype</title>
+    <title>Nera Actionable Notification Prototype</title>
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
     <main class="stage">
-      <section class="phone" aria-label="iPhone prototype">
+      <section class="phone" aria-label="iPhone notification prototype">
         <div class="screen">
-          <div class="island" id="island">
-            <span class="pulse"></span>
-            <span id="islandText">Codex 正在工作</span>
-          </div>
-
           <header class="status">
             <span>9:41</span>
             <span>5G · 82%</span>
           </header>
 
-          <section class="live" id="liveCard">
-            <div>
-              <p class="eyebrow">Live Activity</p>
-              <h1 id="liveTitle">重构 relay spec</h1>
-              <p id="liveMeta">Codex 正在编辑 2 个文件</p>
-            </div>
-            <button class="ghost" id="openTaskButton">查看</button>
+          <section class="lockHeader">
+            <p>5月1日 星期五</p>
+            <h1>9:41</h1>
           </section>
 
-          <section class="notification" id="notification">
-            <p class="eyebrow">需要响应</p>
-            <h2 id="notificationTitle">Codex 请求权限</h2>
-            <p id="notificationBody">运行 `npm test` 需要访问本地依赖缓存。</p>
-            <div class="actions">
-              <button class="secondary" id="denyButton">拒绝</button>
-              <button class="primary" id="approveButton">Approve</button>
-            </div>
-          </section>
-
-          <section class="app" id="appView">
-            <div class="appHeader">
-              <button class="iconButton" id="backButton" aria-label="返回">‹</button>
-              <div>
-                <p class="eyebrow">Nera</p>
-                <h2>Codex 会话</h2>
+          <section class="notificationStack" aria-label="Nera notifications">
+            <article class="notification active" id="primaryNotification">
+              <div class="notificationTop">
+                <div class="appMark">N</div>
+                <div>
+                  <strong>Nera</strong>
+                  <span id="notificationTime">现在</span>
+                </div>
               </div>
-              <button class="iconButton" id="progressButton" aria-label="汇报进度">↻</button>
-            </div>
+              <p class="eyebrow" id="notificationKind">权限请求</p>
+              <h2 id="notificationTitle">Codex 请求执行命令</h2>
+              <p id="notificationBody">`npm test` 需要访问本地依赖缓存。是否允许？</p>
+              <div class="context">
+                <span id="contextAgent">Codex</span>
+                <span id="contextTask">touchpoint 原型</span>
+              </div>
+              <div class="actions" id="actionRow">
+                <button class="secondary" id="secondaryAction">拒绝</button>
+                <button class="primary" id="primaryAction">Approve</button>
+              </div>
+            </article>
 
-            <div class="timeline" id="timeline">
-              <article class="bubble agent">
-                <p>我正在整理 touchpoint 交互原型。</p>
-              </article>
-              <article class="bubble agent">
-                <p>当前等待权限确认：是否允许运行测试？</p>
-              </article>
-            </div>
+            <article class="notification compact">
+              <div class="notificationTop">
+                <div class="appMark muted">N</div>
+                <div>
+                  <strong>Nera</strong>
+                  <span>2分钟前</span>
+                </div>
+              </div>
+              <p>Codex 正在整理 relay 约束。</p>
+            </article>
+          </section>
 
-            <form class="composer" id="composer">
-              <input id="commandInput" type="text" placeholder="补充指令或要求汇报进度" />
-              <button class="primary" type="submit">发送</button>
-            </form>
+          <section class="resultBanner" id="resultBanner" aria-live="polite">
+            <span id="resultText">响应会通过 relay 回传给 sidecar</span>
           </section>
 
           <nav class="dock" aria-label="prototype controls">
-            <button data-event="permission">权限</button>
+            <button data-event="permission">权限请求</button>
             <button data-event="question">Question</button>
-            <button data-event="idle">完成</button>
-            <button data-event="working">工作中</button>
+            <button data-event="idle">完成提醒</button>
           </nav>
         </div>
       </section>
 
       <aside class="notes">
-        <p class="eyebrow">Interaction Model</p>
-        <h2>Touchpoint Prototype</h2>
-        <p>这个原型验证三种入口的协作边界：可操作通知、Live Activity / Dynamic Island、App 内实时会话。</p>
+        <p class="eyebrow">Notification-first</p>
+        <h2>可操作通知原型</h2>
+        <p>这个原型只验证 Nera touchpoint 的可操作通知场景。</p>
         <ul>
-          <li>需要立即响应：可操作通知。</li>
-          <li>持续状态：Live Activity / Dynamic Island。</li>
-          <li>复杂输入和 review：App 内实时会话。</li>
+          <li>授权类请求：直接 approve 或拒绝。</li>
+          <li>question 请求：直接选择或进入回答。</li>
+          <li>完成提醒：进入 review，而不是停留在通知里完成复杂 review。</li>
         </ul>
       </aside>
     </main>

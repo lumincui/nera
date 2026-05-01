@@ -1,115 +1,72 @@
-const state = {
+const events = {
   permission: {
-    island: "等待权限",
-    liveTitle: "权限请求",
-    liveMeta: "Codex 等待 approve 后继续",
-    title: "Codex 请求权限",
-    body: "运行 `npm test` 需要访问本地依赖缓存。",
-    actions: ["拒绝", "Approve"],
+    kind: "权限请求",
+    title: "Codex 请求执行命令",
+    body: "`npm test` 需要访问本地依赖缓存。是否允许？",
+    agent: "Codex",
+    task: "touchpoint 原型",
+    primary: "Approve",
+    secondary: "拒绝",
+    result: "权限响应会通过 relay 回传给 sidecar",
   },
   question: {
-    island: "等待回答",
-    liveTitle: "需要澄清",
-    liveMeta: "Codex 有一个 question",
-    title: "Codex 需要澄清",
-    body: "是否优先设计通知交互，而不是 App 内 review？",
-    actions: ["稍后", "回答"],
+    kind: "Question",
+    title: "Codex 需要你澄清",
+    body: "这个通知原型是否只聚焦 approve 和 question？",
+    agent: "Codex",
+    task: "交互设计",
+    primary: "确认",
+    secondary: "稍后",
+    result: "回答会通过 relay 回传给 sidecar",
   },
   idle: {
-    island: "等待 review",
-    liveTitle: "任务已完成",
-    liveMeta: "Codex 已整理 3 个 touchpoint 状态",
+    kind: "完成提醒",
     title: "Codex 已完成任务",
-    body: "可以查看结果并进入 review。",
-    actions: ["忽略", "Review"],
-  },
-  working: {
-    island: "Codex 正在工作",
-    liveTitle: "设计 touchpoint",
-    liveMeta: "正在生成交互原型",
-    title: "Codex 正在工作",
-    body: "当前无需操作，状态会持续更新。",
-    actions: ["关闭", "查看"],
+    body: "touchpoint 通知原型已生成，可以进入 review。",
+    agent: "Codex",
+    task: "prototype",
+    primary: "Review",
+    secondary: "稍后",
+    result: "Review 会打开对应任务上下文",
   },
 };
 
-const islandText = document.querySelector("#islandText");
-const liveTitle = document.querySelector("#liveTitle");
-const liveMeta = document.querySelector("#liveMeta");
-const notification = document.querySelector("#notification");
+const notification = document.querySelector("#primaryNotification");
+const notificationKind = document.querySelector("#notificationKind");
 const notificationTitle = document.querySelector("#notificationTitle");
 const notificationBody = document.querySelector("#notificationBody");
-const approveButton = document.querySelector("#approveButton");
-const denyButton = document.querySelector("#denyButton");
-const appView = document.querySelector("#appView");
-const openTaskButton = document.querySelector("#openTaskButton");
-const backButton = document.querySelector("#backButton");
-const progressButton = document.querySelector("#progressButton");
-const composer = document.querySelector("#composer");
-const commandInput = document.querySelector("#commandInput");
-const timeline = document.querySelector("#timeline");
+const contextAgent = document.querySelector("#contextAgent");
+const contextTask = document.querySelector("#contextTask");
+const primaryAction = document.querySelector("#primaryAction");
+const secondaryAction = document.querySelector("#secondaryAction");
+const resultBanner = document.querySelector("#resultBanner");
+const resultText = document.querySelector("#resultText");
 
-function setEvent(type) {
-  const event = state[type];
-  islandText.textContent = event.island;
-  liveTitle.textContent = event.liveTitle;
-  liveMeta.textContent = event.liveMeta;
-  notificationTitle.textContent = event.title;
-  notificationBody.textContent = event.body;
-  denyButton.textContent = event.actions[0];
-  approveButton.textContent = event.actions[1];
-  notification.classList.remove("hidden");
+function setEvent(name) {
+  const item = events[name];
+  notificationKind.textContent = item.kind;
+  notificationTitle.textContent = item.title;
+  notificationBody.textContent = item.body;
+  contextAgent.textContent = item.agent;
+  contextTask.textContent = item.task;
+  primaryAction.textContent = item.primary;
+  secondaryAction.textContent = item.secondary;
+  resultText.textContent = item.result;
+  resultBanner.classList.remove("visible");
+  notification.classList.remove("handled");
 }
 
-function addMessage(text, from = "human") {
-  const article = document.createElement("article");
-  article.className = `bubble ${from}`;
-  const paragraph = document.createElement("p");
-  paragraph.textContent = text;
-  article.appendChild(paragraph);
-  timeline.appendChild(article);
-  timeline.scrollTop = timeline.scrollHeight;
+function handleAction(label) {
+  resultText.textContent = `${label} 已发送`;
+  resultBanner.classList.add("visible");
+  notification.classList.add("handled");
 }
 
 document.querySelectorAll(".dock button").forEach((button) => {
   button.addEventListener("click", () => setEvent(button.dataset.event));
 });
 
-approveButton.addEventListener("click", () => {
-  addMessage(`${approveButton.textContent} 已发送`);
-  notification.classList.add("hidden");
-  islandText.textContent = "Codex 继续工作";
-  liveTitle.textContent = "请求已处理";
-  liveMeta.textContent = "Relay 已回传响应";
-});
-
-denyButton.addEventListener("click", () => {
-  addMessage(`${denyButton.textContent} 已发送`);
-  notification.classList.add("hidden");
-  islandText.textContent = "等待下一步";
-  liveTitle.textContent = "请求已拒绝";
-  liveMeta.textContent = "Codex 等待新的指令";
-});
-
-openTaskButton.addEventListener("click", () => {
-  appView.classList.add("open");
-});
-
-backButton.addEventListener("click", () => {
-  appView.classList.remove("open");
-});
-
-progressButton.addEventListener("click", () => {
-  addMessage("请汇报当前进度");
-  addMessage("已完成 touchpoint 入口整理，正在等待 review。", "agent");
-});
-
-composer.addEventListener("submit", (event) => {
-  event.preventDefault();
-  const value = commandInput.value.trim();
-  if (!value) return;
-  addMessage(value);
-  commandInput.value = "";
-});
+primaryAction.addEventListener("click", () => handleAction(primaryAction.textContent));
+secondaryAction.addEventListener("click", () => handleAction(secondaryAction.textContent));
 
 setEvent("permission");

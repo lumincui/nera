@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Nera Touchpoint Prototype</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="stage">
+      <section class="phone" aria-label="iPhone prototype">
+        <div class="screen">
+          <div class="island" id="island">
+            <span class="pulse"></span>
+            <span id="islandText">Codex 正在工作</span>
+          </div>
+
+          <header class="status">
+            <span>9:41</span>
+            <span>5G · 82%</span>
+          </header>
+
+          <section class="live" id="liveCard">
+            <div>
+              <p class="eyebrow">Live Activity</p>
+              <h1 id="liveTitle">重构 relay spec</h1>
+              <p id="liveMeta">Codex 正在编辑 2 个文件</p>
+            </div>
+            <button class="ghost" id="openTaskButton">查看</button>
+          </section>
+
+          <section class="notification" id="notification">
+            <p class="eyebrow">需要响应</p>
+            <h2 id="notificationTitle">Codex 请求权限</h2>
+            <p id="notificationBody">运行 `npm test` 需要访问本地依赖缓存。</p>
+            <div class="actions">
+              <button class="secondary" id="denyButton">拒绝</button>
+              <button class="primary" id="approveButton">Approve</button>
+            </div>
+          </section>
+
+          <section class="app" id="appView">
+            <div class="appHeader">
+              <button class="iconButton" id="backButton" aria-label="返回">‹</button>
+              <div>
+                <p class="eyebrow">Nera</p>
+                <h2>Codex 会话</h2>
+              </div>
+              <button class="iconButton" id="progressButton" aria-label="汇报进度">↻</button>
+            </div>
+
+            <div class="timeline" id="timeline">
+              <article class="bubble agent">
+                <p>我正在整理 touchpoint 交互原型。</p>
+              </article>
+              <article class="bubble agent">
+                <p>当前等待权限确认：是否允许运行测试？</p>
+              </article>
+            </div>
+
+            <form class="composer" id="composer">
+              <input id="commandInput" type="text" placeholder="补充指令或要求汇报进度" />
+              <button class="primary" type="submit">发送</button>
+            </form>
+          </section>
+
+          <nav class="dock" aria-label="prototype controls">
+            <button data-event="permission">权限</button>
+            <button data-event="question">Question</button>
+            <button data-event="idle">完成</button>
+            <button data-event="working">工作中</button>
+          </nav>
+        </div>
+      </section>
+
+      <aside class="notes">
+        <p class="eyebrow">Interaction Model</p>
+        <h2>Touchpoint Prototype</h2>
+        <p>这个原型验证三种入口的协作边界：可操作通知、Live Activity / Dynamic Island、App 内实时会话。</p>
+        <ul>
+          <li>需要立即响应：可操作通知。</li>
+          <li>持续状态：Live Activity / Dynamic Island。</li>
+          <li>复杂输入和 review：App 内实时会话。</li>
+        </ul>
+      </aside>
+    </main>
+
+    <script src="./script.js"></script>
+  </body>
+</html>

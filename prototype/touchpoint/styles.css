@@ -170,25 +170,62 @@ button {
   line-height: 1.38;
 }
 
-.context {
-  display: flex;
+.permissionDetails {
+  display: grid;
   gap: 8px;
   margin-top: 12px;
 }
 
-.context span {
-  padding: 5px 9px;
-  border-radius: 999px;
-  color: #3f4852;
-  background: rgba(118, 118, 128, 0.14);
+.permissionDetails[hidden] {
+  display: none;
+}
+
+.permissionDetails div {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  gap: 10px;
+  align-items: baseline;
+  padding: 9px 10px;
+  border-radius: 14px;
+  background: rgba(118, 118, 128, 0.1);
+}
+
+.permissionDetails span {
+  color: var(--muted);
   font-size: 12px;
+}
+
+.permissionDetails strong,
+.permissionDetails code {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: 13px;
+}
+
+.permissionDetails code {
+  font-family: "SF Mono", ui-monospace, Menlo, monospace;
 }
 
 .actions {
   display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.actions[hidden] {
+  display: none;
+}
+
+.questionActions {
+  display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
   margin-top: 14px;
+}
+
+.questionActions[hidden] {
+  display: none;
 }
 
 button {
@@ -201,6 +238,10 @@ button {
 .primary {
   color: #fff;
   background: var(--blue);
+}
+
+.primary.strong {
+  background: #111316;
 }
 
 .secondary {

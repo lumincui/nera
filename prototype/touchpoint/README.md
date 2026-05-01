@@ -14,6 +14,8 @@
 ## 覆盖场景
 
 - `tool permission request`
+- 权限请求说明任务、权限和命令
+- 权限请求支持动态选项：`Deny`、`Approve`、`Always`
 - `question` 单项选择
 - `question` 文本输入
 - `question` 通过系统听写输入文本

@@ -32,13 +32,24 @@
               <p class="eyebrow" id="notificationKind">权限请求</p>
               <h2 id="notificationTitle">Codex 请求执行命令</h2>
               <p id="notificationBody">`npm test` 需要访问本地依赖缓存。是否允许？</p>
-              <div class="context">
-                <span id="contextAgent">Codex</span>
-                <span id="contextTask">touchpoint 原型</span>
+              <div class="permissionDetails" id="permissionDetails">
+                <div>
+                  <span>任务</span>
+                  <strong id="detailTask">touchpoint 原型</strong>
+                </div>
+                <div>
+                  <span>请求权限</span>
+                  <strong id="detailPermission">访问本地依赖缓存</strong>
+                </div>
+                <div>
+                  <span>执行命令</span>
+                  <code id="detailCommand">npm test</code>
+                </div>
               </div>
-              <div class="actions" id="actionRow">
-                <button class="secondary" id="secondaryAction">拒绝</button>
-                <button class="primary" id="primaryAction">Approve</button>
+              <div class="actions" id="actionRow"></div>
+              <div class="questionActions" id="questionActions" hidden>
+                <button class="secondary" id="secondaryAction">稍后</button>
+                <button class="primary" id="primaryAction">确认</button>
               </div>
               <form class="textReply" id="textReply" hidden>
                 <input id="replyInput" type="text" placeholder="输入或使用系统听写回答" />
@@ -76,7 +87,8 @@
         <h2>可操作通知原型</h2>
         <p>这个原型只验证 Nera touchpoint 的可操作通知场景。</p>
         <ul>
-          <li>授权类请求：直接 approve 或拒绝。</li>
+          <li>权限请求：说明任务、权限、命令。</li>
+          <li>权限请求：支持动态操作，例如 Deny / Approve / Always。</li>
           <li>question 请求：单项选择，或输入文本。</li>
           <li>语音输入：通过系统听写进入文本回复。</li>
           <li>完成提醒：进入 review，而不是停留在通知里完成复杂 review。</li>

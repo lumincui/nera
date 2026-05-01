@@ -2,12 +2,14 @@ const events = {
   permission: {
     kind: "权限请求",
     title: "Codex 请求执行命令",
-    body: "`npm test` 需要访问本地依赖缓存。是否允许？",
+    body: "Codex 需要你确认这次执行是否允许。",
     agent: "Codex",
     task: "touchpoint 原型",
-    primary: "Approve",
-    secondary: "拒绝",
+    permission: "访问本地依赖缓存",
+    command: "npm test",
+    actions: ["Deny", "Approve", "Always"],
     result: "权限响应会通过 relay 回传给 sidecar",
+    mode: "permission",
   },
   question: {
     kind: "Question",
@@ -15,9 +17,9 @@ const events = {
     body: "这个通知原型是否只聚焦 approve 和 question？",
     agent: "Codex",
     task: "交互设计",
-    primary: "确认",
-    secondary: "稍后",
+    actions: ["稍后", "确认"],
     result: "回答会通过 relay 回传给 sidecar",
+    mode: "question",
     text: false,
   },
   questionChoice: {
@@ -26,9 +28,9 @@ const events = {
     body: "这个通知原型是否只聚焦 approve 和 question？",
     agent: "Codex",
     task: "交互设计",
-    primary: "确认",
-    secondary: "稍后",
+    actions: ["稍后", "确认"],
     result: "回答会通过 relay 回传给 sidecar",
+    mode: "question",
     text: false,
   },
   questionText: {
@@ -37,9 +39,9 @@ const events = {
     body: "你希望我接下来优先验证哪种通知交互？",
     agent: "Codex",
     task: "交互设计",
-    primary: "发送",
-    secondary: "稍后",
+    actions: ["稍后"],
     result: "文本或听写内容会通过 relay 回传给 sidecar",
+    mode: "question",
     text: true,
   },
   idle: {
@@ -48,9 +50,9 @@ const events = {
     body: "touchpoint 通知原型已生成，可以进入 review。",
     agent: "Codex",
     task: "prototype",
-    primary: "Review",
-    secondary: "稍后",
+    actions: ["稍后", "Review"],
     result: "Review 会打开对应任务上下文",
+    mode: "question",
     text: false,
   },
 };
@@ -59,8 +61,12 @@ const notification = document.querySelector("#primaryNotification");
 const notificationKind = document.querySelector("#notificationKind");
 const notificationTitle = document.querySelector("#notificationTitle");
 const notificationBody = document.querySelector("#notificationBody");
-const contextAgent = document.querySelector("#contextAgent");
-const contextTask = document.querySelector("#contextTask");
+const permissionDetails = document.querySelector("#permissionDetails");
+const detailTask = document.querySelector("#detailTask");
+const detailPermission = document.querySelector("#detailPermission");
+const detailCommand = document.querySelector("#detailCommand");
+const actionRow = document.querySelector("#actionRow");
+const questionActions = document.querySelector("#questionActions");
 const primaryAction = document.querySelector("#primaryAction");
 const secondaryAction = document.querySelector("#secondaryAction");
 const resultBanner = document.querySelector("#resultBanner");
@@ -73,15 +79,34 @@ function setEvent(name) {
   notificationKind.textContent = item.kind;
   notificationTitle.textContent = item.title;
   notificationBody.textContent = item.body;
-  contextAgent.textContent = item.agent;
-  contextTask.textContent = item.task;
-  primaryAction.textContent = item.primary;
-  secondaryAction.textContent = item.secondary;
+  detailTask.textContent = item.task;
+  detailPermission.textContent = item.permission || "不适用";
+  detailCommand.textContent = item.command || "不适用";
+  permissionDetails.hidden = item.mode !== "permission";
+  actionRow.hidden = item.mode !== "permission";
+  questionActions.hidden = item.mode === "permission" || item.text;
+  renderActions(item.actions || []);
+  if (item.mode !== "permission" && !item.text) {
+    secondaryAction.textContent = item.actions[0];
+    primaryAction.textContent = item.actions[1];
+  }
   textReply.hidden = !item.text;
   primaryAction.hidden = item.text;
   resultText.textContent = item.result;
   resultBanner.classList.remove("visible");
   notification.classList.remove("handled");
+}
+
+function renderActions(actions) {
+  actionRow.innerHTML = "";
+  actions.forEach((label) => {
+    const button = document.createElement("button");
+    button.textContent = label;
+    button.className = label === "Deny" || label === "拒绝" ? "secondary" : "primary";
+    if (label === "Always") button.classList.add("strong");
+    button.addEventListener("click", () => handleAction(label));
+    actionRow.appendChild(button);
+  });
 }
 
 function handleAction(label) {

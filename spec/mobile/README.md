@@ -8,4 +8,8 @@
 
 - 可操作通知：解决授权类请求和 question 请求。
 - 小组件：刷新频率好像不满足。
-- 实时 xx：待澄清。
+- Live Activities / Dynamic Island：满足实时性和轻量交互能力。
+
+## 当前结构
+
+- `ios-interaction-forms.md`：记录 iOS 上可用于实时性和交互能力的形式。

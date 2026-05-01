@@ -54,6 +54,8 @@ agent 完成任务 / turn
 - approve / deny 优先通过 pending hook response 注入。
 - 普通 human input 第一版可以通过 terminal stdin injection 注入，但不是本路线的第一主路径。
 - touchpoint 通过 APNs 接收主动推送，不需要像 sidecar 一样维护长连接。
+- touchpoint 卡片交互已经画过原型图。
+- 第一版 pending permission 不持久化；sidecar daemon 重启时所有 pending permission 失效。
 
 ## 还没设计清楚的部分
 
@@ -91,11 +93,10 @@ agent 完成任务 / turn
 
 ### 3. Pending permission 的生命周期
 
-需要设计：
+已确认第一版不持久化 pending permission；sidecar daemon 重启时所有 pending permission 失效。详细记录见 `pending-permission-lifecycle.md`。
 
-- pending permission 存在哪里。
-- pending permission 是否持久化。
-- sidecar daemon 重启时 pending permission 如何处理。
+仍需要设计：
+
 - 用户超时未审批时如何处理。
 - agent hook 是否允许长时间阻塞。
 - 如果 hook 超时，touchpoint 上的审批卡片如何失效。
@@ -138,12 +139,12 @@ agent 完成任务 / turn
 
 ### 7. Touchpoint 卡片交互
 
-需要定义第一版 touchpoint 卡片展示内容：
+卡片交互已经画过原型图；后续需要将原型图转写为实现规格或引用到 spec 中。
 
-- permission request 展示什么。
-- approve / deny 按钮如何呈现。
-- completed notification 展示什么。
-- 用户点通知后进入什么详情页。
+仍需要确认：
+
+- 原型图是否作为第一版 touchpoint 卡片交互的 source of truth。
+- 原型图文件或链接放在哪里。
 
 ### 8. 安全边界
 

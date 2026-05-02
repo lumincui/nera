@@ -4,6 +4,26 @@ Native iOS touchpoint app for the MVP flow.
 
 Pairing is hardcoded through `HardcodedPairing.dev` from `packages/nera-core`.
 
+## Local setup
+
+Prerequisites:
+
+```bash
+brew install xcodegen mas
+```
+
+Install full Xcode from the App Store, then point developer tools at it:
+
+```bash
+mas open 497799835 # Xcode
+# Complete the App Store install manually if mas cannot install without sudo / Apple ID interaction.
+sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
+sudo xcodebuild -runFirstLaunch
+xcodebuild -downloadPlatform iOS
+```
+
+The current machine had only Command Line Tools selected at first (`/Library/Developer/CommandLineTools`), which does not include `simctl`, so full Xcode is required before simulator testing.
+
 ## Generate Project
 
 ```bash
@@ -11,6 +31,23 @@ cd apps/touchpoint-ios
 xcodegen generate
 open NeraTouchpoint.xcodeproj
 ```
+
+## Run in iOS Simulator
+
+After full Xcode and an iOS simulator runtime are installed:
+
+```bash
+cd apps/touchpoint-ios
+./scripts/run-simulator.sh
+```
+
+Optional: pass a specific simulator name:
+
+```bash
+./scripts/run-simulator.sh "iPhone 16 Pro"
+```
+
+The script regenerates the Xcode project, builds the `NeraTouchpoint` scheme for iOS Simulator, boots the simulator, installs the app, launches `app.nera.touchpoint`, and opens Simulator.app.
 
 ## Current Paths
 

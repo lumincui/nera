@@ -5,6 +5,7 @@ import UserNotifications
 @MainActor
 final class TouchpointStore: ObservableObject {
     @Published var currentEvent: AgentEvent = .devQuestion
+    @Published var hasActiveEvent = FeatureFlags.devTools
     @Published var selectedChoices = Set<String>()
     @Published var replyText = ""
     @Published var messages: [TouchpointMessage] = []
@@ -83,6 +84,7 @@ final class TouchpointStore: ObservableObject {
 
             lastServerSequence = max(lastServerSequence, event.sequence)
             currentEvent = event.agentEvent
+            hasActiveEvent = true
             selectedChoices.removeAll()
             replyText = ""
             lastStatus = "Pulled \(event.type) from nera-server."
@@ -97,6 +99,7 @@ final class TouchpointStore: ObservableObject {
 
     func loadQuestionEvent() {
         currentEvent = .devQuestion
+        hasActiveEvent = true
         selectedChoices.removeAll()
         replyText = ""
         lastStatus = "Question event received from hardcoded pair."
@@ -104,6 +107,7 @@ final class TouchpointStore: ObservableObject {
 
     func loadIdleEvent() {
         currentEvent = .devIdle
+        hasActiveEvent = true
         selectedChoices.removeAll()
         replyText = ""
         Task {
@@ -281,11 +285,13 @@ final class TouchpointStore: ObservableObject {
     private func handleNotificationAction(_ payload: NotificationActionPayload) {
         if payload.actionIdentifier == "idle.review" {
             currentEvent = .devIdle
+            hasActiveEvent = true
             openReview()
             return
         }
 
         currentEvent = .devQuestion
+        hasActiveEvent = true
         guard !handledRequestIDs.contains(payload.requestID) else {
             lastStatus = "Request already handled."
             return

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		06BAFC78C8FD648C741927D1 /* FeatureFlags.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7FCC093E894BDD041E79590 /* FeatureFlags.swift */; };
 		0AC449F99224EBA9696EF315 /* NeraCore in Frameworks */ = {isa = PBXBuildFile; productRef = 0181C7408C4193F97F4C8B89 /* NeraCore */; };
 		9F3CAD387120C816B590C61F /* TouchpointStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60D846326565F96D5830FE37 /* TouchpointStore.swift */; };
 		A437A3E57A484BA559BDCE05 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB29E4FEAC3E4FACC0AF5397 /* ContentView.swift */; };
@@ -20,6 +21,7 @@
 		60D846326565F96D5830FE37 /* TouchpointStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TouchpointStore.swift; sourceTree = "<group>"; };
 		AB29E4FEAC3E4FACC0AF5397 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		CED038F709111D133356B8D6 /* NotificationActionBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationActionBridge.swift; sourceTree = "<group>"; };
+		E7FCC093E894BDD041E79590 /* FeatureFlags.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureFlags.swift; sourceTree = "<group>"; };
 		F0AAE2CD1C6E8AA6590D7DC0 /* NeraTouchpointApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NeraTouchpointApp.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -56,6 +58,7 @@
 			isa = PBXGroup;
 			children = (
 				AB29E4FEAC3E4FACC0AF5397 /* ContentView.swift */,
+				E7FCC093E894BDD041E79590 /* FeatureFlags.swift */,
 				F0AAE2CD1C6E8AA6590D7DC0 /* NeraTouchpointApp.swift */,
 				CED038F709111D133356B8D6 /* NotificationActionBridge.swift */,
 				60D846326565F96D5830FE37 /* TouchpointStore.swift */,
@@ -136,6 +139,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A437A3E57A484BA559BDCE05 /* ContentView.swift in Sources */,
+				06BAFC78C8FD648C741927D1 /* FeatureFlags.swift in Sources */,
 				C9D871BC0B41C301CDDE2E67 /* NeraTouchpointApp.swift in Sources */,
 				BAC63598240EB8B6B7800FF4 /* NotificationActionBridge.swift in Sources */,
 				9F3CAD387120C816B590C61F /* TouchpointStore.swift in Sources */,
@@ -169,6 +173,7 @@
 				PRODUCT_NAME = NeraTouchpoint;
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG NERA_DEV_FEATURES";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;

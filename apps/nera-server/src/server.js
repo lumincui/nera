@@ -1,6 +1,7 @@
 import http from "node:http";
 
 const port = Number(process.env.NERA_SERVER_PORT || 8787);
+const debugRoutesEnabled = process.env.NERA_ENABLE_DEBUG_ROUTES === "1";
 
 const pairing = {
   pair_id: "dev-pair-local-001",
@@ -69,7 +70,7 @@ const server = http.createServer(async (request, response) => {
       return sendJSON(response, 200, { responses });
     }
 
-    if (request.method === "GET" && url.pathname === "/debug/state") {
+    if (request.method === "GET" && url.pathname === "/debug/state" && debugRoutesEnabled) {
       return sendJSON(response, 200, state);
     }
 

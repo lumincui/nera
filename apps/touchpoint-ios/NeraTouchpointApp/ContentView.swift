@@ -8,11 +8,19 @@ struct ContentView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
-                    PairingView(pairing: store.pairing)
-                    ServerView()
-                    EventSwitcher()
-                    EventCard()
-                    MessageInspector()
+                    if FeatureFlags.devTools {
+                        PairingView(pairing: store.pairing)
+                        ServerView()
+                        EventSwitcher()
+                    }
+                    if store.hasActiveEvent {
+                        EventCard()
+                    } else {
+                        WaitingView()
+                    }
+                    if FeatureFlags.devTools {
+                        MessageInspector()
+                    }
                 }
                 .padding()
             }
@@ -20,6 +28,27 @@ struct ContentView: View {
             .navigationTitle("Nera")
             .navigationBarTitleDisplayMode(.inline)
         }
+    }
+}
+
+private struct WaitingView: View {
+    var body: some View {
+        VStack(spacing: 14) {
+            Image(systemName: "dot.radiowaves.left.and.right")
+                .font(.largeTitle)
+                .foregroundStyle(.blue)
+
+            Text("Nera is ready")
+                .font(.title3.weight(.semibold))
+
+            Text("Agent requests and completion updates will appear here when they need your attention.")
+                .font(.body)
+                .multilineTextAlignment(.center)
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(24)
+        .background(.background, in: RoundedRectangle(cornerRadius: 8))
     }
 }
 
@@ -172,15 +201,17 @@ private struct QuestionActions: View {
             .buttonStyle(.borderedProminent)
             .disabled(!store.canSendQuestionAnswer)
 
-            Button {
-                Task {
-                    await store.sendQuestionNotification()
+            if FeatureFlags.devTools {
+                Button {
+                    Task {
+                        await store.sendQuestionNotification()
+                    }
+                } label: {
+                    Label("Send Test Notification", systemImage: "app.badge")
+                        .frame(maxWidth: .infinity)
                 }
-            } label: {
-                Label("Send Test Notification", systemImage: "app.badge")
-                    .frame(maxWidth: .infinity)
+                .buttonStyle(.bordered)
             }
-            .buttonStyle(.bordered)
         }
     }
 }
@@ -191,19 +222,23 @@ private struct IdleActions: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             FlowLabel(text: "Completion notification")
-            Text("Notification permission: \(store.notificationPermission)")
-                .font(.footnote)
-                .foregroundStyle(.secondary)
+            if FeatureFlags.devTools {
+                Text("Notification permission: \(store.notificationPermission)")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
 
             HStack {
-                Button {
-                    Task {
-                        await store.sendIdleNotification()
+                if FeatureFlags.devTools {
+                    Button {
+                        Task {
+                            await store.sendIdleNotification()
+                        }
+                    } label: {
+                        Label("Notify Again", systemImage: "bell.badge")
                     }
-                } label: {
-                    Label("Notify Again", systemImage: "bell.badge")
+                    .buttonStyle(.bordered)
                 }
-                .buttonStyle(.bordered)
 
                 Button {
                     store.openReview()

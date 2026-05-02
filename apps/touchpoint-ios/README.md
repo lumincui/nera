@@ -15,8 +15,9 @@ open NeraTouchpoint.xcodeproj
 ## Current Paths
 
 1. `question` opens an interactive action card, supports multi-select plus text, and creates an `answer_question` message.
-2. `question` can also schedule a local actionable notification before APNs is connected.
+2. `question` can also schedule a local actionable notification before APNs is connected. Quick choice and text reply actions submit in the background without opening the app.
 3. `idle` sends a local completion notification and records a `completion_notification` message.
+4. `Review` / detail-oriented notification actions intentionally open the app.
 
 The local notifications are a development stand-in for APNs. Debug push should
 use APNs sandbox; TestFlight and App Store builds should use APNs production.

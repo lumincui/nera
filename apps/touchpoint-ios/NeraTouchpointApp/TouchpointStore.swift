@@ -246,17 +246,17 @@ final class TouchpointStore: ObservableObject {
         let questionAction = UNNotificationAction(
             identifier: "question.choice.primary",
             title: "Question action",
-            options: [.foreground]
+            options: []
         )
         let idleAction = UNNotificationAction(
             identifier: "question.choice.idle",
             title: "Idle notification",
-            options: [.foreground]
+            options: []
         )
         let textAction = UNTextInputNotificationAction(
             identifier: "question.text",
             title: "Reply",
-            options: [.foreground],
+            options: [],
             textInputButtonTitle: "Send",
             textInputPlaceholder: "Add context"
         )

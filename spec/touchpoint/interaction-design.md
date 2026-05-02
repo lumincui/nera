@@ -9,6 +9,7 @@
 - 需要用户立即响应的事项应该主动触达用户。
 - 持续状态应该可见，但不应持续打扰用户。
 - 复杂输入和 review 应进入 App 内完成。
+- 第一版通知 action 默认在后台提交；只有 review / 查看详情这类需要完整上下文的动作才打开 App。
 
 ## 交互入口
 
@@ -28,6 +29,14 @@
 | `idle` | Live Activities / Dynamic Island | 查看结果或进入 review。 |
 | agent 正在工作 | Live Activities / Dynamic Island | 查看状态。 |
 | agent 需要复杂 review | App 内实时会话 | review 工作进度和内容。 |
+
+## 通知 Action 执行方式
+
+- 一键动作默认不打开 App，在通知 action 的后台回调中直接提交给 relay / nera-server，例如 approve、deny、continue、stop 和简单 choice。
+- 文本回复也默认不打开 App，使用 `UNTextInputNotificationAction` 在通知内收集文本，并在后台回调中提交。
+- Review、查看详情、复杂上下文阅读、多步输入等动作需要打开 App。
+- 后台 action 只承载短任务：组装响应、发起一次网络请求、记录结果；不能依赖后台长期运行。
+- 如果后台提交失败，touchpoint 应本地记录 pending response，等待 App 下次启动或后续后台机会重试。
 
 ## 权限请求形态
 

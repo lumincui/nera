@@ -1,5 +1,6 @@
 import Foundation
 import NeraCore
+import UIKit
 import UserNotifications
 
 @MainActor
@@ -11,14 +12,17 @@ final class TouchpointStore: ObservableObject {
     @Published var messages: [TouchpointMessage] = []
     @Published var lastStatus = FeatureFlags.devTools ? "Hardcoded pair is ready." : "Nera is ready."
     @Published var notificationPermission = "Not requested"
-    @Published var serverURLText = "http://127.0.0.1:8787"
+    @Published var serverURLText = Bundle.main.object(forInfoDictionaryKey: "NeraServerURL") as? String ?? "http://127.0.0.1:8787"
     @Published var lastServerSequence = 0
     @Published var handledRequestIDs = Set<String>()
+    @Published var remoteNotificationToken = ""
 
     let pairing = HardcodedPairing.dev
 
     private let notificationCenter = UNUserNotificationCenter.current()
     private var actionObserver: NSObjectProtocol?
+    private var tokenObserver: NSObjectProtocol?
+    private var tokenFailureObserver: NSObjectProtocol?
 
     init() {
         registerNotificationCategories()
@@ -35,11 +39,47 @@ final class TouchpointStore: ObservableObject {
                 self?.handleNotificationAction(payload)
             }
         }
+        tokenObserver = NotificationCenter.default.addObserver(
+            forName: .neraRemoteNotificationTokenReceived,
+            object: nil,
+            queue: .main
+        ) { [weak self] notification in
+            guard let token = notification.object as? String else {
+                return
+            }
+
+            Task { @MainActor in
+                await self?.registerDeviceToken(token)
+            }
+        }
+        tokenFailureObserver = NotificationCenter.default.addObserver(
+            forName: .neraRemoteNotificationRegistrationFailed,
+            object: nil,
+            queue: .main
+        ) { [weak self] notification in
+            guard let message = notification.object as? String else {
+                return
+            }
+
+            Task { @MainActor in
+                self?.lastStatus = "Remote notification registration failed: \(message)"
+            }
+        }
+
+        Task {
+            await requestRemoteNotifications()
+        }
     }
 
     deinit {
         if let actionObserver {
             NotificationCenter.default.removeObserver(actionObserver)
+        }
+        if let tokenObserver {
+            NotificationCenter.default.removeObserver(tokenObserver)
+        }
+        if let tokenFailureObserver {
+            NotificationCenter.default.removeObserver(tokenFailureObserver)
         }
     }
 
@@ -64,6 +104,25 @@ final class TouchpointStore: ObservableObject {
         currentEvent.kind == .question &&
             !handledRequestIDs.contains(currentEvent.id) &&
             (!selectedChoices.isEmpty || !replyText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+    }
+
+    func requestRemoteNotifications() async {
+        do {
+            let granted = try await notificationCenter.requestAuthorization(options: [.alert, .sound, .badge])
+            notificationPermission = granted ? "Granted" : "Denied"
+
+            guard granted else {
+                lastStatus = "Notification permission is denied."
+                return
+            }
+
+            await MainActor.run {
+                UIApplication.shared.registerForRemoteNotifications()
+            }
+        } catch {
+            notificationPermission = "Error"
+            lastStatus = "Failed to request notification permission: \(error.localizedDescription)"
+        }
     }
 
     func pullLatestEvent() async {
@@ -247,12 +306,12 @@ final class TouchpointStore: ObservableObject {
     private func registerNotificationCategories() {
         let questionAction = UNNotificationAction(
             identifier: "question.choice.primary",
-            title: "Question action",
+            title: "Allow",
             options: []
         )
         let idleAction = UNNotificationAction(
-            identifier: "question.choice.idle",
-            title: "Idle notification",
+            identifier: "question.choice.secondary",
+            title: "Deny",
             options: []
         )
         let textAction = UNTextInputNotificationAction(
@@ -301,7 +360,7 @@ final class TouchpointStore: ObservableObject {
             return
         }
 
-        let selected = selection(for: payload.actionIdentifier)
+        let selected = selection(for: payload.actionIdentifier, choices: event.choices)
         let message = TouchpointMessage(
             requestID: payload.requestID,
             type: .answerQuestion,
@@ -322,12 +381,12 @@ final class TouchpointStore: ObservableObject {
         }
     }
 
-    private func selection(for actionIdentifier: String) -> [String] {
+    private func selection(for actionIdentifier: String, choices: [String]) -> [String] {
         switch actionIdentifier {
         case "question.choice.primary":
-            return ["Question action"]
-        case "question.choice.idle":
-            return ["Idle notification"]
+            return [choices.first ?? "Allow"]
+        case "question.choice.secondary":
+            return [choices.dropFirst().first ?? "Deny"]
         default:
             return []
         }
@@ -364,6 +423,23 @@ final class TouchpointStore: ObservableObject {
             lastStatus = "\(message.type.rawValue) posted to nera-server."
         } catch {
             lastStatus = "Local message created, but server post failed: \(error.localizedDescription)"
+        }
+    }
+
+    private func registerDeviceToken(_ token: String) async {
+        remoteNotificationToken = token
+
+        do {
+            let url = try makeURL(path: "/touchpoint/device-token")
+            let request = DeviceTokenRegistrationRequest(
+                touchpointID: pairing.touchpointID,
+                token: token,
+                environment: pairing.apnsEnvironment.rawValue
+            )
+            let _: ServerAcceptedResponse = try await postJSON(url, body: request)
+            lastStatus = "Remote notifications are ready."
+        } catch {
+            lastStatus = "Device token received, but server registration failed: \(error.localizedDescription)"
         }
     }
 
@@ -481,6 +557,18 @@ private struct TouchpointResponseRequest: Encodable {
 
 private struct ServerAcceptedResponse: Decodable {
     let accepted: Bool
+}
+
+private struct DeviceTokenRegistrationRequest: Encodable {
+    let touchpointID: String
+    let token: String
+    let environment: String
+
+    enum CodingKeys: String, CodingKey {
+        case touchpointID = "touchpoint_id"
+        case token
+        case environment
+    }
 }
 
 private extension JSONDecoder {

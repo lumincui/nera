@@ -52,7 +52,7 @@ The script regenerates the Xcode project, builds the `NeraTouchpoint` scheme for
 ## Current Paths
 
 1. `question` opens an interactive action card, supports multi-select plus text, and creates an `answer_question` message.
-2. `question` can also schedule a local actionable notification before APNs is connected. Quick choice and text reply actions submit in the background without opening the app.
+2. `question` is delivered by APNs when the server runs with `NERA_PUSH_PROVIDER=apns`; quick choice and text reply actions submit in the background without opening the app.
 3. `idle` sends a local completion notification and records a `completion_notification` message.
 4. `Review` / detail-oriented notification actions intentionally open the app.
 
@@ -71,3 +71,21 @@ the first screen presents the user-facing Nera waiting state.
 
 The local notifications are a development stand-in for APNs. Debug push should
 use APNs sandbox; TestFlight and App Store builds should use APNs production.
+
+## APNs
+
+The app has the `aps-environment` entitlement for development builds. On launch
+it requests notification permission, registers with APNs, and posts the device
+token to `POST /touchpoint/device-token` on the configured nera-server.
+
+For local device testing, `NeraServerURL` is set in `project.yml` to the Mac's
+LAN address so the iPhone can reach the local server. Update
+`INFOPLIST_KEY_NeraServerURL` if the Mac's IP address changes.
+
+APNs requires a physical iPhone. The iOS simulator can validate local
+notification behavior, but it does not provide a real APNs device token for
+Apple push delivery.
+
+Push Notifications also require a paid Apple Developer Program team. Personal
+development teams cannot create a provisioning profile with the
+`aps-environment` entitlement.

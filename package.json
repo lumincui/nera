@@ -9,6 +9,7 @@
   "scripts": {
     "server": "npm --workspace apps/nera-server run dev",
     "server:debug": "NERA_ENABLE_DEBUG_ROUTES=1 npm --workspace apps/nera-server run dev",
+    "server:apns": "NERA_PUSH_PROVIDER=apns npm --workspace apps/nera-server run dev",
     "sidecar:question": "npm --workspace apps/sidecar run question --",
     "sidecar:idle": "npm --workspace apps/sidecar run idle --",
     "sidecar:poll": "npm --workspace apps/sidecar run poll",

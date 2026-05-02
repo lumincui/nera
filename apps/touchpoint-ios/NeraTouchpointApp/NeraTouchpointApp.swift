@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 import UserNotifications
 
 final class AppDelegate: NSObject, UIApplicationDelegate {
@@ -8,6 +9,26 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
     ) -> Bool {
         UNUserNotificationCenter.current().delegate = NotificationActionBridge.shared
         return true
+    }
+
+    func application(
+        _ application: UIApplication,
+        didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data
+    ) {
+        NotificationCenter.default.post(
+            name: .neraRemoteNotificationTokenReceived,
+            object: deviceToken.map { String(format: "%02x", $0) }.joined()
+        )
+    }
+
+    func application(
+        _ application: UIApplication,
+        didFailToRegisterForRemoteNotificationsWithError error: Error
+    ) {
+        NotificationCenter.default.post(
+            name: .neraRemoteNotificationRegistrationFailed,
+            object: error.localizedDescription
+        )
     }
 }
 

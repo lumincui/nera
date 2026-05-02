@@ -4,6 +4,8 @@ import UserNotifications
 
 extension Notification.Name {
     static let neraNotificationActionReceived = Notification.Name("neraNotificationActionReceived")
+    static let neraRemoteNotificationTokenReceived = Notification.Name("neraRemoteNotificationTokenReceived")
+    static let neraRemoteNotificationRegistrationFailed = Notification.Name("neraRemoteNotificationRegistrationFailed")
 }
 
 struct NotificationActionPayload: Sendable {
@@ -37,7 +39,7 @@ final class NotificationActionBridge: NSObject, UNUserNotificationCenterDelegate
         let textResponse = response as? UNTextInputNotificationResponse
         let userInfo = response.notification.request.content.userInfo
         let payload = NotificationActionPayload(
-            requestID: response.notification.request.identifier,
+            requestID: userInfo["request_id"] as? String ?? response.notification.request.identifier,
             actionIdentifier: response.actionIdentifier,
             text: textResponse?.userText ?? "",
             eventKind: (userInfo["event_kind"] as? String).flatMap(AgentEventKind.init(rawValue:)),

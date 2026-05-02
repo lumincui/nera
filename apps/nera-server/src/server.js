@@ -1,6 +1,10 @@
 import http from "node:http";
+import http2 from "node:http2";
+import { createSign } from "node:crypto";
+import { readFileSync } from "node:fs";
 
 const port = Number(process.env.NERA_SERVER_PORT || 8787);
+const host = process.env.NERA_SERVER_HOST || "0.0.0.0";
 const featureFlags = {
   debugRoutes: process.env.NERA_ENABLE_DEBUG_ROUTES === "1",
   mockPushProvider: process.env.NERA_PUSH_PROVIDER !== "apns",
@@ -20,6 +24,7 @@ const state = {
   events: [],
   responses: [],
   pushIntents: [],
+  deviceTokens: new Map(),
 };
 
 const server = http.createServer(async (request, response) => {
@@ -44,12 +49,23 @@ const server = http.createServer(async (request, response) => {
       const body = await readJSON(request);
       const event = normalizeEvent(body);
       state.events.push(event);
-      const pushIntent = createPushIntent(event);
+      const pushIntent = await createPushIntent(event);
       state.pushIntents.push(pushIntent);
       return sendJSON(response, 202, {
         accepted: true,
         event,
         push_intent: pushIntent,
+      });
+    }
+
+    if (request.method === "POST" && url.pathname === "/touchpoint/device-token") {
+      const body = await readJSON(request);
+      const registration = normalizeDeviceTokenRegistration(body);
+      state.deviceTokens.set(registration.touchpoint_id, registration);
+      return sendJSON(response, 202, {
+        accepted: true,
+        touchpoint_id: registration.touchpoint_id,
+        environment: registration.environment,
       });
     }
 
@@ -78,7 +94,7 @@ const server = http.createServer(async (request, response) => {
     }
 
     if (request.method === "GET" && url.pathname === "/debug/state" && featureFlags.debugRoutes) {
-      return sendJSON(response, 200, state);
+      return sendJSON(response, 200, serializeDebugState());
     }
 
     return sendJSON(response, 404, { error: "not_found" });
@@ -90,8 +106,8 @@ const server = http.createServer(async (request, response) => {
   }
 });
 
-server.listen(port, "127.0.0.1", () => {
-  console.log(`nera-server listening on http://127.0.0.1:${port}`);
+server.listen(port, host, () => {
+  console.log(`nera-server listening on http://${host}:${port}`);
 });
 
 function normalizeEvent(body) {
@@ -138,8 +154,24 @@ function normalizeTouchpointResponse(body) {
   };
 }
 
-function createPushIntent(event) {
+function normalizeDeviceTokenRegistration(body) {
+  assertTouchpoint(body.touchpoint_id);
+
+  const token = requireString(body.token, "token").replace(/\s/g, "");
+  if (!/^[a-fA-F0-9]+$/.test(token)) {
+    throw httpError(400, "invalid_device_token", "token must be a hex APNs device token");
+  }
+
   return {
+    touchpoint_id: body.touchpoint_id,
+    token,
+    environment: body.environment === "production" ? "production" : "sandbox",
+    updated_at: new Date().toISOString(),
+  };
+}
+
+async function createPushIntent(event) {
+  const baseIntent = {
     sequence: nextSequence(),
     event_id: event.event_id,
     touchpoint_id: event.touchpoint_id,
@@ -148,8 +180,260 @@ function createPushIntent(event) {
     title: event.title,
     body: event.body,
     provider: pushProvider,
-    status: featureFlags.mockPushProvider ? "mocked" : "not_configured",
     created_at: new Date().toISOString(),
+  };
+
+  if (featureFlags.mockPushProvider) {
+    return {
+      ...baseIntent,
+      status: "mocked",
+    };
+  }
+
+  const deviceToken = state.deviceTokens.get(event.touchpoint_id);
+  if (!deviceToken) {
+    return {
+      ...baseIntent,
+      status: "no_device_token",
+    };
+  }
+
+  const config = readAPNSConfig();
+  if (!config.configured) {
+    return {
+      ...baseIntent,
+      status: "not_configured",
+      missing: config.missing,
+    };
+  }
+
+  try {
+    const apnsResponse = await sendAPNSNotification(event, deviceToken.token, config);
+    return {
+      ...baseIntent,
+      status: "sent",
+      apns_id: apnsResponse.apnsID,
+      apns_status: apnsResponse.statusCode,
+    };
+  } catch (error) {
+    return {
+      ...baseIntent,
+      status: "failed",
+      error: error.message,
+    };
+  }
+}
+
+function readAPNSConfig() {
+  const config = {
+    keyID: process.env.NERA_APNS_KEY_ID || "",
+    teamID: process.env.NERA_APNS_TEAM_ID || "",
+    topic: process.env.NERA_APNS_BUNDLE_ID || "app.nera.touchpoint",
+    environment: process.env.NERA_APNS_ENV || pairing.apns_environment,
+    privateKey: process.env.NERA_APNS_PRIVATE_KEY || readPrivateKeyFile(),
+  };
+  const missing = [];
+
+  if (!config.keyID) {
+    missing.push("NERA_APNS_KEY_ID");
+  }
+  if (!config.teamID) {
+    missing.push("NERA_APNS_TEAM_ID");
+  }
+  if (!config.privateKey) {
+    missing.push("NERA_APNS_PRIVATE_KEY or NERA_APNS_PRIVATE_KEY_PATH");
+  }
+
+  return {
+    ...config,
+    configured: missing.length === 0,
+    missing,
+  };
+}
+
+function readPrivateKeyFile() {
+  if (!process.env.NERA_APNS_PRIVATE_KEY_PATH) {
+    return "";
+  }
+
+  try {
+    return readFileSync(process.env.NERA_APNS_PRIVATE_KEY_PATH, "utf8");
+  } catch {
+    return "";
+  }
+}
+
+async function sendAPNSNotification(event, deviceToken, config) {
+  const client = http2.connect(apnsOrigin(config.environment));
+
+  try {
+    const payload = JSON.stringify(apnsPayload(event));
+    const request = client.request({
+      ":method": "POST",
+      ":path": `/3/device/${deviceToken}`,
+      authorization: `bearer ${apnsJWT(config)}`,
+      "apns-topic": config.topic,
+      "apns-push-type": "alert",
+      "apns-priority": "10",
+    });
+
+    request.setEncoding("utf8");
+    request.end(payload);
+
+    return await new Promise((resolve, reject) => {
+      let responseBody = "";
+      let statusCode = 0;
+      let apnsID = "";
+
+      request.on("response", (headers) => {
+        statusCode = Number(headers[":status"] || 0);
+        apnsID = String(headers["apns-id"] || "");
+      });
+      request.on("data", (chunk) => {
+        responseBody += chunk;
+      });
+      request.on("end", () => {
+        if (statusCode >= 200 && statusCode < 300) {
+          resolve({ statusCode, apnsID });
+          return;
+        }
+
+        reject(new Error(responseBody || `APNs HTTP ${statusCode}`));
+      });
+      request.on("error", reject);
+      request.setTimeout(15000, () => {
+        request.close();
+        reject(new Error("APNs request timed out"));
+      });
+    });
+  } finally {
+    client.close();
+  }
+}
+
+function apnsPayload(event) {
+  return {
+    aps: {
+      alert: {
+        title: event.title,
+        body: event.body,
+      },
+      sound: "default",
+      category: event.type === "question" ? "NERA_QUESTION" : "NERA_IDLE",
+    },
+    request_id: event.event_id,
+    event_kind: event.type,
+    agent: event.agent,
+    task: event.task || "",
+    title: event.title,
+    body: event.body,
+    choices: event.choices,
+  };
+}
+
+function apnsOrigin(environment) {
+  return environment === "production"
+    ? "https://api.push.apple.com"
+    : "https://api.sandbox.push.apple.com";
+}
+
+function apnsJWT(config) {
+  const header = base64URL(JSON.stringify({
+    alg: "ES256",
+    kid: config.keyID,
+  }));
+  const claims = base64URL(JSON.stringify({
+    iss: config.teamID,
+    iat: Math.floor(Date.now() / 1000),
+  }));
+  const signingInput = `${header}.${claims}`;
+  const signature = createSign("SHA256")
+    .update(signingInput)
+    .sign(config.privateKey);
+
+  return `${signingInput}.${derToJose(signature, 64)}`;
+}
+
+function derToJose(signature, bytes) {
+  let offset = 0;
+  if (signature[offset++] !== 0x30) {
+    throw new Error("Invalid ECDSA signature");
+  }
+
+  offset = readDERLength(signature, offset).offset;
+
+  if (signature[offset++] !== 0x02) {
+    throw new Error("Invalid ECDSA signature");
+  }
+  const rInfo = readDERLength(signature, offset);
+  offset = rInfo.offset;
+  let rLength = rInfo.length;
+
+  if (signature[offset] === 0) {
+    offset += 1;
+    rLength -= 1;
+  }
+
+  const r = signature.subarray(offset, offset + rLength);
+  offset += rLength;
+
+  if (signature[offset++] !== 0x02) {
+    throw new Error("Invalid ECDSA signature");
+  }
+  const sInfo = readDERLength(signature, offset);
+  offset = sInfo.offset;
+  let sLength = sInfo.length;
+  if (signature[offset] === 0) {
+    offset += 1;
+    sLength -= 1;
+  }
+
+  const s = signature.subarray(offset, offset + sLength);
+
+  return base64URL(Buffer.concat([
+    leftPad(r, bytes / 2),
+    leftPad(s, bytes / 2),
+  ]));
+}
+
+function readDERLength(buffer, offset) {
+  let length = buffer[offset++];
+  if (length < 0x80) {
+    return { length, offset };
+  }
+
+  const bytes = length & 0x7f;
+  length = 0;
+  for (let index = 0; index < bytes; index += 1) {
+    length = (length << 8) | buffer[offset++];
+  }
+
+  return { length, offset };
+}
+
+function leftPad(buffer, length) {
+  if (buffer.length === length) {
+    return buffer;
+  }
+  if (buffer.length > length) {
+    return buffer.subarray(buffer.length - length);
+  }
+
+  return Buffer.concat([Buffer.alloc(length - buffer.length), buffer]);
+}
+
+function base64URL(input) {
+  return Buffer.from(input)
+    .toString("base64")
+    .replace(/=/g, "")
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_");
+}
+
+function serializeDebugState() {
+  return {
+    ...state,
+    deviceTokens: Array.from(state.deviceTokens.values()),
   };
 }
 

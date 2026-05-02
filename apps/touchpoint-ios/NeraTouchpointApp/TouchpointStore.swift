@@ -12,6 +12,7 @@ final class TouchpointStore: ObservableObject {
     @Published var notificationPermission = "Not requested"
     @Published var serverURLText = "http://127.0.0.1:8787"
     @Published var lastServerSequence = 0
+    @Published var handledRequestIDs = Set<String>()
 
     let pairing = HardcodedPairing.dev
 
@@ -56,6 +57,12 @@ final class TouchpointStore: ObservableObject {
         }
 
         return json
+    }
+
+    var canSendQuestionAnswer: Bool {
+        currentEvent.kind == .question &&
+            !handledRequestIDs.contains(currentEvent.id) &&
+            (!selectedChoices.isEmpty || !replyText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
     }
 
     func pullLatestEvent() async {
@@ -113,7 +120,13 @@ final class TouchpointStore: ObservableObject {
     }
 
     func sendQuestionAnswer() {
+        guard canSendQuestionAnswer else {
+            lastStatus = "Choose an option or enter text before sending."
+            return
+        }
+
         let choices = currentEvent.choices.filter { selectedChoices.contains($0) }
+        let text = replyText.trimmingCharacters(in: .whitespacesAndNewlines)
         let message = TouchpointMessage(
             requestID: currentEvent.id,
             type: .answerQuestion,
@@ -121,11 +134,12 @@ final class TouchpointStore: ObservableObject {
             agent: currentEvent.agent,
             task: currentEvent.task,
             selectedChoices: choices,
-            text: replyText,
+            text: text,
             action: "submit_question_answer"
         )
 
         messages.insert(message, at: 0)
+        handledRequestIDs.insert(currentEvent.id)
         lastStatus = "answer_question message created for sidecar."
         selectedChoices.removeAll()
         replyText = ""
@@ -272,6 +286,11 @@ final class TouchpointStore: ObservableObject {
         }
 
         currentEvent = .devQuestion
+        guard !handledRequestIDs.contains(payload.requestID) else {
+            lastStatus = "Request already handled."
+            return
+        }
+
         let selected = selection(for: payload.actionIdentifier)
         let message = TouchpointMessage(
             requestID: payload.requestID,
@@ -285,6 +304,7 @@ final class TouchpointStore: ObservableObject {
         )
 
         messages.insert(message, at: 0)
+        handledRequestIDs.insert(payload.requestID)
         lastStatus = "answer_question message created from notification action."
 
         Task {

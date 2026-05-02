@@ -166,10 +166,11 @@ private struct QuestionActions: View {
             Button {
                 store.sendQuestionAnswer()
             } label: {
-                Label("Send Answer", systemImage: "paperplane.fill")
+                Label(store.handledRequestIDs.contains(store.currentEvent.id) ? "Answer Sent" : "Send Answer", systemImage: "paperplane.fill")
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.borderedProminent)
+            .disabled(!store.canSendQuestionAnswer)
 
             Button {
                 Task {

@@ -56,5 +56,18 @@ The script regenerates the Xcode project, builds the `NeraTouchpoint` scheme for
 3. `idle` sends a local completion notification and records a `completion_notification` message.
 4. `Review` / detail-oriented notification actions intentionally open the app.
 
+## Feature Flags
+
+Debug builds define `NERA_DEV_FEATURES` and show local development tools:
+
+- hardcoded pairing details
+- server URL and manual pull control
+- event switcher
+- local notification trigger buttons
+- message payload inspector
+
+Release builds do not define `NERA_DEV_FEATURES`, so those tools are hidden and
+the first screen presents the user-facing Nera waiting state.
+
 The local notifications are a development stand-in for APNs. Debug push should
 use APNs sandbox; TestFlight and App Store builds should use APNs production.

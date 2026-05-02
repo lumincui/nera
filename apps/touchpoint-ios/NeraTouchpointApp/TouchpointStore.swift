@@ -9,7 +9,7 @@ final class TouchpointStore: ObservableObject {
     @Published var selectedChoices = Set<String>()
     @Published var replyText = ""
     @Published var messages: [TouchpointMessage] = []
-    @Published var lastStatus = "Hardcoded pair is ready."
+    @Published var lastStatus = FeatureFlags.devTools ? "Hardcoded pair is ready." : "Nera is ready."
     @Published var notificationPermission = "Not requested"
     @Published var serverURLText = "http://127.0.0.1:8787"
     @Published var lastServerSequence = 0
@@ -168,6 +168,7 @@ final class TouchpointStore: ObservableObject {
             content.body = currentEvent.body
             content.sound = .default
             content.categoryIdentifier = "NERA_QUESTION"
+            content.userInfo = notificationUserInfo(for: currentEvent)
 
             let request = UNNotificationRequest(
                 identifier: currentEvent.id,
@@ -227,6 +228,7 @@ final class TouchpointStore: ObservableObject {
             content.body = currentEvent.body
             content.sound = .default
             content.categoryIdentifier = "NERA_IDLE"
+            content.userInfo = notificationUserInfo(for: currentEvent)
 
             let request = UNNotificationRequest(
                 identifier: currentEvent.id,
@@ -283,14 +285,16 @@ final class TouchpointStore: ObservableObject {
     }
 
     private func handleNotificationAction(_ payload: NotificationActionPayload) {
+        let event = event(from: payload)
+
         if payload.actionIdentifier == "idle.review" {
-            currentEvent = .devIdle
+            currentEvent = event
             hasActiveEvent = true
             openReview()
             return
         }
 
-        currentEvent = .devQuestion
+        currentEvent = event
         hasActiveEvent = true
         guard !handledRequestIDs.contains(payload.requestID) else {
             lastStatus = "Request already handled."
@@ -327,6 +331,29 @@ final class TouchpointStore: ObservableObject {
         default:
             return []
         }
+    }
+
+    private func notificationUserInfo(for event: AgentEvent) -> [String: Any] {
+        [
+            "event_kind": event.kind.rawValue,
+            "agent": event.agent,
+            "task": event.task,
+            "title": event.title,
+            "body": event.body,
+            "choices": event.choices
+        ]
+    }
+
+    private func event(from payload: NotificationActionPayload) -> AgentEvent {
+        AgentEvent(
+            id: payload.requestID,
+            kind: payload.eventKind ?? .question,
+            agent: payload.agent ?? "Codex",
+            task: payload.task ?? "notification action",
+            title: payload.title ?? currentEvent.title,
+            body: payload.body ?? currentEvent.body,
+            choices: payload.choices.isEmpty ? currentEvent.choices : payload.choices
+        )
     }
 
     private func postMessageToServer(_ message: TouchpointMessage) async {

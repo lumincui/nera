@@ -1,7 +1,11 @@
 import http from "node:http";
 
 const port = Number(process.env.NERA_SERVER_PORT || 8787);
-const debugRoutesEnabled = process.env.NERA_ENABLE_DEBUG_ROUTES === "1";
+const featureFlags = {
+  debugRoutes: process.env.NERA_ENABLE_DEBUG_ROUTES === "1",
+  mockPushProvider: process.env.NERA_PUSH_PROVIDER !== "apns",
+};
+const pushProvider = featureFlags.mockPushProvider ? "mock" : "apns";
 
 const pairing = {
   pair_id: "dev-pair-local-001",
@@ -26,6 +30,8 @@ const server = http.createServer(async (request, response) => {
       return sendJSON(response, 200, {
         ok: true,
         service: "nera-server",
+        feature_flags: featureFlags,
+        push_provider: pushProvider,
         pairing,
       });
     }
@@ -38,11 +44,12 @@ const server = http.createServer(async (request, response) => {
       const body = await readJSON(request);
       const event = normalizeEvent(body);
       state.events.push(event);
-      state.pushIntents.push(createPushIntent(event));
+      const pushIntent = createPushIntent(event);
+      state.pushIntents.push(pushIntent);
       return sendJSON(response, 202, {
         accepted: true,
         event,
-        push_intent: state.pushIntents.at(-1),
+        push_intent: pushIntent,
       });
     }
 
@@ -70,7 +77,7 @@ const server = http.createServer(async (request, response) => {
       return sendJSON(response, 200, { responses });
     }
 
-    if (request.method === "GET" && url.pathname === "/debug/state" && debugRoutesEnabled) {
+    if (request.method === "GET" && url.pathname === "/debug/state" && featureFlags.debugRoutes) {
       return sendJSON(response, 200, state);
     }
 
@@ -140,7 +147,8 @@ function createPushIntent(event) {
     category: event.type === "question" ? "NERA_QUESTION" : "NERA_IDLE",
     title: event.title,
     body: event.body,
-    status: "mocked",
+    provider: pushProvider,
+    status: featureFlags.mockPushProvider ? "mocked" : "not_configured",
     created_at: new Date().toISOString(),
   };
 }

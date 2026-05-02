@@ -18,7 +18,16 @@ npm run server
 
 Default URL: `http://127.0.0.1:8787`.
 
-Debug routes are disabled by default. Enable them during local testing:
+## Feature Flags
+
+Debug and simulation capabilities are explicit environment flags:
+
+| Flag | Default | Purpose |
+| --- | --- | --- |
+| `NERA_ENABLE_DEBUG_ROUTES` | `0` | Enables `/debug/state` for local inspection. |
+| `NERA_PUSH_PROVIDER` | `mock` | Uses the in-memory mock push boundary. Set to `apns` only when the APNs provider is implemented and configured. |
+
+Enable debug routes during local testing:
 
 ```bash
 NERA_ENABLE_DEBUG_ROUTES=1 npm run server

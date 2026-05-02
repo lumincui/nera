@@ -1,4 +1,5 @@
 import Foundation
+import NeraCore
 import UserNotifications
 
 extension Notification.Name {
@@ -9,6 +10,12 @@ struct NotificationActionPayload: Sendable {
     let requestID: String
     let actionIdentifier: String
     let text: String
+    let eventKind: AgentEventKind?
+    let agent: String?
+    let task: String?
+    let title: String?
+    let body: String?
+    let choices: [String]
 }
 
 final class NotificationActionBridge: NSObject, UNUserNotificationCenterDelegate {
@@ -28,10 +35,17 @@ final class NotificationActionBridge: NSObject, UNUserNotificationCenterDelegate
         didReceive response: UNNotificationResponse
     ) async {
         let textResponse = response as? UNTextInputNotificationResponse
+        let userInfo = response.notification.request.content.userInfo
         let payload = NotificationActionPayload(
             requestID: response.notification.request.identifier,
             actionIdentifier: response.actionIdentifier,
-            text: textResponse?.userText ?? ""
+            text: textResponse?.userText ?? "",
+            eventKind: (userInfo["event_kind"] as? String).flatMap(AgentEventKind.init(rawValue:)),
+            agent: userInfo["agent"] as? String,
+            task: userInfo["task"] as? String,
+            title: userInfo["title"] as? String,
+            body: userInfo["body"] as? String,
+            choices: userInfo["choices"] as? [String] ?? []
         )
 
         await MainActor.run {

@@ -1,0 +1,16 @@
+{
+  "name": "nera",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/nera-server",
+    "apps/sidecar"
+  ],
+  "scripts": {
+    "server": "npm --workspace apps/nera-server run dev",
+    "sidecar:question": "npm --workspace apps/sidecar run question --",
+    "sidecar:idle": "npm --workspace apps/sidecar run idle --",
+    "sidecar:poll": "npm --workspace apps/sidecar run poll",
+    "check": "npm --workspace apps/nera-server run check && npm --workspace apps/sidecar run check"
+  }
+}

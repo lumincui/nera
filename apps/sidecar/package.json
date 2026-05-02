@@ -1,0 +1,16 @@
+{
+  "name": "@nera/sidecar",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "question": "node src/cli.js question",
+    "idle": "node src/cli.js idle",
+    "poll": "node src/cli.js poll",
+    "codex:question": "node src/cli.js codex question",
+    "codex:stop": "node src/cli.js codex stop",
+    "check": "node --check src/cli.js"
+  },
+  "bin": {
+    "nera-sidecar": "src/cli.js"
+  }
+}

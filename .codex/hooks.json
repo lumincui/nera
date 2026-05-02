@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd /Users/lumin/nera && NERA_SERVER_URL=http://127.0.0.1:8787 node apps/sidecar/src/cli.js codex stop",
+            "timeout": 30,
+            "statusMessage": "Notifying Nera"
+          }
+        ]
+      }
+    ]
+  }
+}

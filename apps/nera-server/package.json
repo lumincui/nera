@@ -1,0 +1,9 @@
+{
+  "name": "@nera/server",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node src/server.js",
+    "check": "node --check src/server.js"
+  }
+}

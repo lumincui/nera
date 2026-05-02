@@ -31,6 +31,7 @@
               </div>
               <p class="eyebrow" id="notificationKind">权限请求</p>
               <h2 id="notificationTitle">Codex 请求执行命令</h2>
+              <p class="meta" id="notificationMeta">Codex · touchpoint 原型</p>
               <p id="notificationBody">`npm test` 需要访问本地依赖缓存。是否允许？</p>
               <div class="permissionDetails" id="permissionDetails">
                 <div>
@@ -86,6 +87,28 @@
         <p class="eyebrow">Notification-first</p>
         <h2>可操作通知原型</h2>
         <p>这个原型只验证 Nera touchpoint 的可操作通知场景。</p>
+        <div class="pairingPill">
+          <span>硬编码配对</span>
+          <strong id="pairingStatus">sidecar-mac-dev -> touchpoint-ios-dev</strong>
+        </div>
+        <div class="pathStatus" aria-label="core path status">
+          <div class="pathItem idle" id="pathQuestion">
+            <span>Path 1</span>
+            <strong>question 触发交互式 action</strong>
+          </div>
+          <div class="pathItem idle" id="pathIdle">
+            <span>Path 2</span>
+            <strong>idle 发送消息通知</strong>
+          </div>
+        </div>
+        <section class="inspector" aria-label="event inspector">
+          <h3>当前事件流</h3>
+          <ol id="flowSteps"></ol>
+          <h3>最近消息</h3>
+          <ul class="messageLog" id="messageLog"></ul>
+          <h3>Payload</h3>
+          <pre id="payloadPreview">{}</pre>
+        </section>
         <ul>
           <li>权限请求：说明任务、权限、命令。</li>
           <li>权限请求：支持动态操作，例如 Deny / Approve / Always。</li>

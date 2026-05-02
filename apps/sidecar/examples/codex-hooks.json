@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd /Users/lumin/nera && npm --workspace apps/sidecar run codex:stop",
+            "timeout": 30,
+            "statusMessage": "Notifying Nera"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "hook_event_name": "NeraQuestion",
+  "session_id": "codex-session-dev",
+  "turn_id": "turn-question-001",
+  "cwd": "/Users/lumin/nera",
+  "transcript_path": "/tmp/nera-codex-transcript.jsonl",
+  "model": "gpt-5",
+  "title": "Codex needs clarification",
+  "question": "Should Nera validate question actions or idle notifications first?",
+  "choices": ["Question action", "Idle notification", "Both"]
+}

@@ -1,0 +1,11 @@
+{
+  "Simulator Target Bundle": "app.nera.touchpoint",
+  "aps": {
+    "alert": {
+      "title": "Codex needs clarification",
+      "body": "Should Nera validate question actions or idle notifications first?"
+    },
+    "sound": "default",
+    "category": "NERA_QUESTION"
+  }
+}

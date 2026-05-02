@@ -1,0 +1,10 @@
+{
+  "hook_event_name": "Stop",
+  "session_id": "codex-session-dev",
+  "turn_id": "turn-stop-001",
+  "cwd": "/Users/lumin/nera",
+  "transcript_path": "/tmp/nera-codex-transcript.jsonl",
+  "model": "gpt-5",
+  "stop_hook_active": false,
+  "last_assistant_message": "Implemented the local Nera MVP flow and it is ready for review."
+}
